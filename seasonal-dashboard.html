@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seasonal Diving Conditions Dashboard | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== SEASONAL DASHBOARD SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #0077b6;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* ===== DASHBOARD HERO ===== */
+        .dashboard-hero {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 150px 0 80px;
+            margin-bottom: 40px;
+        }
+        
+        .dashboard-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .dashboard-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .current-month {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            margin-top: 20px;
+        }
+        
+        /* ===== DASHBOARD LAYOUT ===== */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+        
+        /* ===== SIDEBAR ===== */
+        .dashboard-sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .month-selector {
+            margin-bottom: 30px;
+        }
+        
+        .month-selector h3 {
+            color: #023e8a;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .month-btn {
+            padding: 12px 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .month-btn:hover {
+            border-color: #00b4d8;
+            color: #00b4d8;
+        }
+        
+        .month-btn.active {
+            background: #00b4d8;
+            color: white;
+            border-color: #00b4d8;
+        }
+        
+        .quick-stats {
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #023e8a;
+        }
+        
+        .stat-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .badge-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-good {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-fair {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* ===== MAIN DASHBOARD ===== */
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .card-header h3 {
+            color: #023e8a;
+            font-size: 1.3rem;
+        }
+        
+        .card-icon {
+            font-size: 30px;
+            color: #00b4d8;
+        }
+        
+        /* ===== WATER TEMPERATURE CARD ===== */
+        .temp-gauge {
+            position: relative;
+            height: 200px;
+            margin: 30px 0;
+        }
+        
+        .gauge-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(#00b4d8 0% 70%, #e0e0e0 70% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gauge-inner {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .temp-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .temp-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .temp-range {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== VISIBILITY CARD ===== */
+        .visibility-meter {
+            height: 40px;
+            background: linear-gradient(90deg, #721c24 0%, #856404 50%, #155724 100%);
+            border-radius: 20px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .visibility-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 60px;
+            background: white;
+            border: 3px solid #023e8a;
+            border-radius: 10px;
+            margin-left: -10px;
+        }
+        
+        .visibility-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== MARINE LIFE CARD ===== */
+        .marine-life-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .marine-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: transform 0.3s;
+        }
+        
+        .marine-item:hover {
+            transform: translateY(-5px);
+            background: #f0f8ff;
+        }
+        
+        .marine-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .marine-name {
+            font-weight: 600;
+            color: #023e8a;
+            margin-bottom: 5px;
+        }
+        
+        .marine-probability {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* ===== WEATHER CONDITIONS CARD ===== */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .weather-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .weather-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .weather-sunny {
+            color: #ffd700;
+        }
+        
+        .weather-cloudy {
+            color: #a9a9a9;
+        }
+        
+        .weather-rainy {
+            color: #4169e1;
+        }
+        
+        .weather-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 5px;
+        }
+        
+        /* ===== DIVE QUALITY SCORE ===== */
+        .quality-score {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .score-circle {
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#00b4d8 0% 85%, #e0e0e0 85% 100%);
+            position: relative;
+        }
+        
+        .score-inner {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .score-label {
+            color: #00b4d8;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .score-description {
+            color: #666;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        
+        /* ===== RECOMMENDATIONS CARD ===== */
+        .recommendations-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .recommendations-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .recommendations-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .rec-icon {
+            color: #00b4d8;
+            font-size: 20px;
+            margin-top: 3px;
+        }
+        
+        /* ===== MONTHLY COMPARISON ===== */
+        .comparison-card {
+            grid-column: 1 / -1;
+        }
+        
+        .comparison-chart {
+            height: 300px;
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            padding: 0 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(to top, #00b4d8, #0077b6);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            color: #023e8a;
+        }
+        
+        /* ===== CTA SECTION ===== */
+        .cta {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-top: 50px;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: #023e8a;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-sidebar {
+                position: static;
+            }
+            
+            .dashboard-main {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .dashboard-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .marine-life-grid,
+            .weather-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .month-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-hero {
+                padding: 120px 0 60px;
+            }
+            
+            .marine-life-grid,
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .month-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Hero -->
+    <section class="dashboard-hero">
+        <div class="container">
+            <h1>Seasonal Diving Conditions Dashboard</h1>
+            <p>Real-time data and historical trends for water temperature, visibility, marine life sightings, and dive conditions in Dar es Salaam</p>
+            <div class="current-month">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Current Month: <strong id="currentMonth">June 2024</strong></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Container -->
+    <section class="dashboard-container container">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <div class="month-selector">
+                <h3>Select Month</h3>
+                <div class="month-grid" id="monthGrid">
+                    <!-- Months will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="quick-stats">
+                <h3 style="color: #023e8a; margin-bottom: 20px; font-size: 1.3rem;">Quick Stats</h3>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Overall Dive Quality</span>
+                    <span class="stat-value" id="overallScore">8.5/10</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Visibility Range</span>
+                    <span class="stat-value" id="visibilityRange">20-30m</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Water Temperature</span>
+                    <span class="stat-value" id="waterTemp">26-29°C</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Marine Life Activity</span>
+                    <div class="stat-badge badge-excellent" id="marineActivity">Excellent</div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Weather Conditions</span>
+                    <div class="stat-badge badge-good" id="weatherConditions">Good</div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Best For</span>
+                    <span class="stat-value" id="bestFor">All Levels</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="color: #666; font-size: 0.9rem; line-height: 1.6;">Data updated daily from our dive logs and weather stations. Historical averages based on 10+ years of diving in Dar es Salaam.</p>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard -->
+        <div class="dashboard-main">
+            <!-- Water Temperature Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Water Temperature</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                </div>
+                <div class="temp-gauge">
+                    <div class="gauge-circle">
+                        <div class="gauge-inner">
+                            <div class="temp-value" id="currentTemp">27°C</div>
+                            <div class="temp-label">Average</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="temp-range">
+                    <span>Min: <strong id="minTemp">25°C</strong></span>
+                    <span>Max: <strong id="maxTemp">29°C</strong></span>
+                </div>
+                <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" id="tempDescription">Comfortable temperature for diving. 3mm wetsuit recommended for longer dives.</p>
+            </div>
+            
+            <!-- Visibility Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Visibility</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <div class="visibility-meter">
+                    <div class="visibility-indicator" id="visibilityIndicator" style="left: 70%;"></div>
+                </div>
+                <div class="visibility-labels">
+                    <span>Poor (0-10m)</span>
+                    <span>Good (10-20m)</span>
+                    <span>Excellent (20-30m+)</span>
+                </div>
+                <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" id="visibilityDescription">Excellent visibility conditions. Perfect for photography and marine life observation.</p>
+            </div>
+            
+            <!-- Marine Life Sightings Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Marine Life Activity</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                </div>
+                <div class="marine-life-grid" id="marineLifeGrid">
+                    <!-- Marine life items will be populated by JavaScript -->
+                </div>
+                <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" id="marineDescription">High activity with frequent sightings of turtles, reef sharks, and schooling fish.</p>
+            </div>
+            
+            <!-- Weather Conditions Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Weather Conditions</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                </div>
+                <div class="weather-grid">
+                    <div class="weather-item">
+                        <div class="weather-icon weather-sunny">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="weather-value" id="sunnyDays">25</div>
+                        <div class="weather-label">Sunny Days</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <div class="weather-icon weather-cloudy">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="weather-value" id="rainyDays">3</div>
+                        <div class="weather-label">Rainy Days</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <div class="weather-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div class="weather-value" id="windSpeed">8-12</div>
+                        <div class="weather-label">Wind (knots)</div>
+                    </div>
+                    
+                    <div class="weather-item">
+                        <div class="weather-icon">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <div class="weather-value" id="waveHeight">0.5-1.5</div>
+                        <div class="weather-label">Waves (m)</div>
+                    </div>
+                </div>
+                <p style="color: #666; margin-top: 20px; font-size: 0.9rem;" id="weatherDescription">Mostly sunny with light winds. Excellent boating and diving conditions.</p>
+            </div>
+            
+            <!-- Dive Quality Score Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Dive Quality Score</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="quality-score">
+                    <div class="score-circle">
+                        <div class="score-inner">
+                            <div class="score-value" id="qualityScore">8.5</div>
+                            <div class="score-label">/10</div>
+                        </div>
+                    </div>
+                    <div class="score-description" id="qualityDescription">
+                        Excellent diving conditions with high visibility, comfortable temperatures, and abundant marine life.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommendations Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Dive Recommendations</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                </div>
+                <ul class="recommendations-list" id="recommendationsList">
+                    <!-- Recommendations will be populated by JavaScript -->
+                </ul>
+            </div>
+            
+            <!-- Monthly Comparison Card -->
+            <div class="dashboard-card comparison-card">
+                <div class="card-header">
+                    <h3>Monthly Comparison</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="comparison-chart">
+                    <div class="chart-bars" id="comparisonChart">
+                        <!-- Chart bars will be populated by JavaScript -->
+                    </div>
+                </div>
+                <p style="color: #666; margin-top: 30px; font-size: 0.9rem; text-align: center;">
+                    Comparison of dive quality scores throughout the year. Higher scores indicate better diving conditions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Dive in Perfect Conditions?</h2>
+            <p>Book your dive during the best months for optimal visibility and marine life sightings</p>
+            
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn btn-primary">Book Your Dive</a>
+                <a href="tel:+255769474643" class="btn btn-secondary">
+                    <i class="fas fa-phone-alt"></i> Call for Advice
+                </a>
+                <a href="https://wa.me/255769474643" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Questions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Seasonal Data
+        const seasonalData = {
+            january: {
+                name: "January",
+                waterTemp: { current: 28, min: 26, max: 29 },
+                visibility: { value: 25, description: "Excellent visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "High" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Medium" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Low" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Very Low" }
+                ],
+                weather: { sunnyDays: 25, rainyDays: 4, windSpeed: "10-15", waveHeight: "1.0-2.0" },
+                qualityScore: 8.2,
+                recommendations: [
+                    "Whale shark watching trips available",
+                    "Ideal for underwater photography",
+                    "Consider 3mm wetsuit for comfort"
+                ],
+                bestFor: "Advanced Divers",
+                marineActivity: "Excellent",
+                weatherConditions: "Good"
+            },
+            february: {
+                name: "February",
+                waterTemp: { current: 29, min: 27, max: 30 },
+                visibility: { value: 28, description: "Exceptional visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "Very High" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "High" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Low" }
+                ],
+                weather: { sunnyDays: 23, rainyDays: 5, windSpeed: "8-12", waveHeight: "0.8-1.5" },
+                qualityScore: 9.0,
+                recommendations: [
+                    "Peak season for whale sharks",
+                    "Book in advance for popular dates",
+                    "Perfect conditions for all divers"
+                ],
+                bestFor: "All Levels",
+                marineActivity: "Excellent",
+                weatherConditions: "Excellent"
+            },
+            march: {
+                name: "March",
+                waterTemp: { current: 29, min: 28, max: 30 },
+                visibility: { value: 25, description: "Excellent visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "High" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Medium" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Very Low" }
+                ],
+                weather: { sunnyDays: 22, rainyDays: 6, windSpeed: "6-10", waveHeight: "0.5-1.2" },
+                qualityScore: 8.5,
+                recommendations: [
+                    "Great for beginner divers",
+                    "Calm sea conditions",
+                    "Good for family diving"
+                ],
+                bestFor: "Beginner Divers",
+                marineActivity: "Excellent",
+                weatherConditions: "Excellent"
+            },
+            april: {
+                name: "April",
+                waterTemp: { current: 28, min: 27, max: 29 },
+                visibility: { value: 20, description: "Good visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "Low" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Low" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "None" }
+                ],
+                weather: { sunnyDays: 20, rainyDays: 8, windSpeed: "5-8", waveHeight: "0.3-1.0" },
+                qualityScore: 7.8,
+                recommendations: [
+                    "Good for reef diving",
+                    "Less crowded sites",
+                    "Consider shorter dives"
+                ],
+                bestFor: "Intermediate Divers",
+                marineActivity: "Good",
+                weatherConditions: "Good"
+            },
+            may: {
+                name: "May",
+                waterTemp: { current: 27, min: 26, max: 28 },
+                visibility: { value: 18, description: "Good visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "Very Low" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Low" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "Medium" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "High" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "None" }
+                ],
+                weather: { sunnyDays: 18, rainyDays: 10, windSpeed: "8-15", waveHeight: "1.0-2.0" },
+                qualityScore: 7.0,
+                recommendations: [
+                    "Check weather forecast",
+                    "Good for wreck diving",
+                    "Bring warmer wetsuit"
+                ],
+                bestFor: "Experienced Divers",
+                marineActivity: "Good",
+                weatherConditions: "Fair"
+            },
+            june: {
+                name: "June",
+                waterTemp: { current: 26, min: 25, max: 27 },
+                visibility: { value: 22, description: "Very good visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "None" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Low" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Very High" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "None" }
+                ],
+                weather: { sunnyDays: 20, rainyDays: 8, windSpeed: "10-18", waveHeight: "1.5-2.5" },
+                qualityScore: 7.5,
+                recommendations: [
+                    "Dolphin watching excellent",
+                    "5mm wetsuit recommended",
+                    "Check sea conditions daily"
+                ],
+                bestFor: "Advanced Divers",
+                marineActivity: "Good",
+                weatherConditions: "Fair"
+            },
+            july: {
+                name: "July",
+                waterTemp: { current: 25, min: 24, max: 26 },
+                visibility: { value: 25, description: "Excellent visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "None" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Low" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "Medium" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Very High" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Migration" }
+                ],
+                weather: { sunnyDays: 22, rainyDays: 6, windSpeed: "12-20", waveHeight: "1.8-3.0" },
+                qualityScore: 7.2,
+                recommendations: [
+                    "Humpback whale migration",
+                    "Experienced divers only",
+                    "Check weather carefully"
+                ],
+                bestFor: "Advanced Divers",
+                marineActivity: "Fair",
+                weatherConditions: "Fair"
+            },
+            august: {
+                name: "August",
+                waterTemp: { current: 24, min: 23, max: 25 },
+                visibility: { value: 28, description: "Exceptional visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "None" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Low" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "Medium" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "High" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "High" }
+                ],
+                weather: { sunnyDays: 25, rainyDays: 4, windSpeed: "15-25", waveHeight: "2.0-3.5" },
+                qualityScore: 7.8,
+                recommendations: [
+                    "Whale watching season",
+                    "Strong currents possible",
+                    "Advanced diving only"
+                ],
+                bestFor: "Expert Divers",
+                marineActivity: "Fair",
+                weatherConditions: "Good"
+            },
+            september: {
+                name: "September",
+                waterTemp: { current: 25, min: 24, max: 26 },
+                visibility: { value: 30, description: "Perfect visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "Low" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Medium" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "High" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Medium" }
+                ],
+                weather: { sunnyDays: 26, rainyDays: 3, windSpeed: "10-18", waveHeight: "1.5-2.5" },
+                qualityScore: 8.5,
+                recommendations: [
+                    "Best visibility of the year",
+                    "Great for photography",
+                    "Good for all experience levels"
+                ],
+                bestFor: "All Levels",
+                marineActivity: "Good",
+                weatherConditions: "Excellent"
+            },
+            october: {
+                name: "October",
+                waterTemp: { current: 26, min: 25, max: 27 },
+                visibility: { value: 25, description: "Excellent visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "Medium" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "High" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Low" }
+                ],
+                weather: { sunnyDays: 27, rainyDays: 2, windSpeed: "8-15", waveHeight: "1.0-2.0" },
+                qualityScore: 9.0,
+                recommendations: [
+                    "Perfect diving conditions",
+                    "Manta ray season begins",
+                    "Ideal for all divers"
+                ],
+                bestFor: "All Levels",
+                marineActivity: "Excellent",
+                weatherConditions: "Excellent"
+            },
+            november: {
+                name: "November",
+                waterTemp: { current: 27, min: 26, max: 28 },
+                visibility: { value: 22, description: "Very good visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "High" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "Very High" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "High" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "Very Low" }
+                ],
+                weather: { sunnyDays: 24, rainyDays: 4, windSpeed: "6-12", waveHeight: "0.8-1.5" },
+                qualityScore: 8.8,
+                recommendations: [
+                    "Peak manta ray season",
+                    "Great for macro photography",
+                    "Comfortable water temperature"
+                ],
+                bestFor: "All Levels",
+                marineActivity: "Excellent",
+                weatherConditions: "Excellent"
+            },
+            december: {
+                name: "December",
+                waterTemp: { current: 28, min: 27, max: 29 },
+                visibility: { value: 20, description: "Good visibility" },
+                marineLife: [
+                    { name: "Whale Sharks", icon: "fas fa-shark", probability: "High" },
+                    { name: "Manta Rays", icon: "fas fa-feather-alt", probability: "High" },
+                    { name: "Turtles", icon: "fas fa-turtle", probability: "High" },
+                    { name: "Reef Sharks", icon: "fas fa-fish", probability: "Medium" },
+                    { name: "Dolphins", icon: "fas fa-fish", probability: "Low" },
+                    { name: "Humpbacks", icon: "fas fa-whale", probability: "None" }
+                ],
+                weather: { sunnyDays: 22, rainyDays: 6, windSpeed: "8-15", waveHeight: "1.0-2.0" },
+                qualityScore: 8.0,
+                recommendations: [
+                    "Holiday season - book early",
+                    "Great for festive dives",
+                    "Family friendly conditions"
+                ],
+                bestFor: "All Levels",
+                marineActivity: "Excellent",
+                weatherConditions: "Good"
+            }
+        };
+
+        // Current month (June for example)
+        let currentMonth = 'june';
+
+        // Initialize dashboard
+        function initDashboard() {
+            // Create month buttons
+            const monthGrid = document.getElementById('monthGrid');
+            monthGrid.innerHTML = '';
+            
+            Object.keys(seasonalData).forEach(monthKey => {
+                const month = seasonalData[monthKey];
+                const button = document.createElement('button');
+                button.className = `month-btn ${monthKey === currentMonth ? 'active' : ''}`;
+                button.textContent = month.name.substring(0, 3);
+                button.setAttribute('data-month', monthKey);
+                
+                button.addEventListener('click', () => {
+                    selectMonth(monthKey);
+                });
+                
+                monthGrid.appendChild(button);
+            });
+            
+            // Load current month data
+            loadMonthData(currentMonth);
+            
+            // Create comparison chart
+            createComparisonChart();
+        }
+
+        // Load month data
+        function loadMonthData(monthKey) {
+            const data = seasonalData[monthKey];
+            if (!data) return;
+            
+            // Update current month display
+            document.getElementById('currentMonth').textContent = data.name + ' 2024';
+            
+            // Update quick stats
+            document.getElementById('overallScore').textContent = `${data.qualityScore}/10`;
+            document.getElementById('visibilityRange').textContent = `${data.visibility.value}m`;
+            document.getElementById('waterTemp').textContent = `${data.waterTemp.min}-${data.waterTemp.max}°C`;
+            document.getElementById('marineActivity').textContent = data.marineActivity;
+            document.getElementById('weatherConditions').textContent = data.weatherConditions;
+            document.getElementById('bestFor').textContent = data.bestFor;
+            
+            // Update badges classes
+            const marineBadge = document.getElementById('marineActivity');
+            marineBadge.className = 'stat-badge badge-' + (data.marineActivity === 'Excellent' ? 'excellent' : 
+                                                          data.marineActivity === 'Good' ? 'good' : 'fair');
+            
+            const weatherBadge = document.getElementById('weatherConditions');
+            weatherBadge.className = 'stat-badge badge-' + (data.weatherConditions === 'Excellent' ? 'excellent' : 
+                                                           data.weatherConditions === 'Good' ? 'good' : 'fair');
+            
+            // Update water temperature
+            document.getElementById('currentTemp').textContent = `${data.waterTemp.current}°C`;
+            document.getElementById('minTemp').textContent = `${data.waterTemp.min}°C`;
+            document.getElementById('maxTemp').textContent = `${data.waterTemp.max}°C`;
+            document.getElementById('tempDescription').textContent = 
+                `Average water temperature ${data.waterTemp.current}°C. ${data.waterTemp.min}-${data.waterTemp.max}°C range.`;
+            
+            // Update visibility
+            const visibilityPercent = (data.visibility.value / 30) * 100;
+            document.getElementById('visibilityIndicator').style.left = `${visibilityPercent}%`;
+            document.getElementById('visibilityDescription').textContent = data.visibility.description;
+            
+            // Update marine life grid
+            const marineGrid = document.getElementById('marineLifeGrid');
+            marineGrid.innerHTML = '';
+            
+            data.marineLife.forEach(item => {
+                const marineItem = document.createElement('div');
+                marineItem.className = 'marine-item';
+                marineItem.innerHTML = `
+                    <div class="marine-icon">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <div class="marine-name">${item.name}</div>
+                    <div class="marine-probability">${item.probability}</div>
+                `;
+                marineGrid.appendChild(marineItem);
+            });
+            
+            document.getElementById('marineDescription').textContent = 
+                `${data.marineActivity} marine life activity with various species sightings.`;
+            
+            // Update weather
+            document.getElementById('sunnyDays').textContent = data.weather.sunnyDays;
+            document.getElementById('rainyDays').textContent = data.weather.rainyDays;
+            document.getElementById('windSpeed').textContent = data.weather.windSpeed;
+            document.getElementById('waveHeight').textContent = data.weather.waveHeight;
+            document.getElementById('weatherDescription').textContent = 
+                `${data.weather.sunnyDays} sunny days, ${data.weather.rainyDays} rainy days. Winds ${data.weather.windSpeed} knots.`;
+            
+            // Update quality score
+            document.getElementById('qualityScore').textContent = data.qualityScore;
+            document.getElementById('qualityDescription').textContent = 
+                `Overall dive quality score: ${data.qualityScore}/10. ${data.qualityScore >= 8 ? 'Excellent' : 
+                data.qualityScore >= 7 ? 'Good' : 'Fair'} conditions for diving.`;
+            
+            // Update recommendations
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+            
+            data.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <i class="fas fa-check rec-icon"></i>
+                    <span>${rec}</span>
+                `;
+                recList.appendChild(li);
+            });
+            
+            // Update active month button
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-month') === monthKey) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Select month
+        function selectMonth(monthKey) {
+            currentMonth = monthKey;
+            loadMonthData(monthKey);
+        }
+
+        // Create comparison chart
+        function createComparisonChart() {
+            const chart = document.getElementById('comparisonChart');
+            chart.innerHTML = '';
+            
+            Object.keys(seasonalData).forEach(monthKey => {
+                const data = seasonalData[monthKey];
+                const barHeight = (data.qualityScore / 10) * 150;
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${barHeight}px`;
+                bar.innerHTML = `
+                    <div class="chart-value">${data.qualityScore}</div>
+                    <div class="chart-label">${data.name.substring(0, 3)}</div>
+                `;
+                
+                chart.appendChild(bar);
+            });
+        }
+
+        // Initialize on load
+        initDashboard();
+        
+        // Update gauge animation
+        function updateGaugeAnimation() {
+            const gauge = document.querySelector('.gauge-circle');
+            const score = seasonalData[currentMonth].qualityScore;
+            const percent = (score / 10) * 100;
+            
+            gauge.style.background = `conic-gradient(#00b4d8 0% ${percent}%, #e0e0e0 ${percent}% 100%)`;
+        }
+        
+        // Update gauge when month changes
+        document.querySelectorAll('.month-btn').forEach(btn => {
+            btn.addEventListener('click', updateGaugeAnimation);
+        });
+        
+        // Initial gauge update
+        updateGaugeAnimation();
+        
+        // Add some interactivity to marine life items
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.marine-item')) {
+                const item = e.target.closest('.marine-item');
+                item.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    item.style.transform = 'scale(1)';
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
