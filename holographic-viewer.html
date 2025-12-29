@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Dive Experience Viewer | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== 3D VIEWER PAGE SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #0a192f;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        header.scrolled {
+            padding: 5px 0;
+            background: rgba(10, 25, 47, 0.98);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        /* ===== 3D VIEWER HERO ===== */
+        .viewer-hero {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background: radial-gradient(circle at center, #0a2a4a 0%, #0a192f 100%);
+            overflow: hidden;
+        }
+        
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+        }
+        
+        .hero-badge {
+            background: rgba(0, 180, 216, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+        
+        .hero-badge i {
+            color: #00b4d8;
+            font-size: 20px;
+        }
+        
+        .viewer-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00b4d8, #90e0ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+        
+        .viewer-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.8;
+            animation: fadeInUp 0.8s ease 0.7s both;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.9s both;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            border-color: #00b4d8;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 180, 216, 0.2);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00b4d8;
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+            z-index: 2;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== MAIN 3D VIEWER CONTAINER ===== */
+        .viewer-section {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: #90e0ef;
+            font-size: 1.2rem;
+            margin-bottom: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .viewer-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+            margin-top: 40px;
+            height: 600px;
+        }
+        
+        .viewer-3d {
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        
+        .viewer-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        
+        .viewer-canvas:active {
+            cursor: grabbing;
+        }
+        
+        .viewer-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 25px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: #00b4d8;
+            transform: translateY(-2px);
+        }
+        
+        .viewer-info {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+        
+        .viewer-info h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .viewer-info h3 i {
+            color: #00b4d8;
+        }
+        
+        .depth-indicator {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .depth-meter {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .depth-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4d8, #0077b6);
+            border-radius: 5px;
+            width: 65%;
+            position: relative;
+        }
+        
+        .depth-markers {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .environment-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            color: #00b4d8;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .marine-life-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .marine-life-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .marine-life-list li i {
+            color: #00b4d8;
+        }
+        
+        /* ===== 3D LOCATIONS GRID ===== */
+        .locations-section {
+            padding: 100px 0;
+            background: rgba(5, 15, 30, 0.5);
+        }
+        
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .location-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .location-card:hover {
+            transform: translateY(-10px);
+            border-color: #00b4d8;
+            box-shadow: 0 15px 30px rgba(0, 180, 216, 0.2);
+        }
+        
+        .location-card.active {
+            border-color: #00b4d8;
+            background: rgba(0, 180, 216, 0.1);
+        }
+        
+        .location-image {
+            height: 200px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .location-content {
+            padding: 25px;
+        }
+        
+        .location-content h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .location-content p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .location-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .location-tag {
+            background: rgba(0, 180, 216, 0.2);
+            color: #90e0ef;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        /* ===== EQUIPMENT PANEL ===== */
+        .equipment-section {
+            padding: 100px 0;
+        }
+        
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .equipment-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .equipment-item:hover, .equipment-item.active {
+            background: rgba(0, 180, 216, 0.1);
+            border-color: #00b4d8;
+            transform: translateY(-5px);
+        }
+        
+        .equipment-icon {
+            font-size: 40px;
+            color: #00b4d8;
+            margin-bottom: 20px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .equipment-item h4 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .equipment-item p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* ===== VR MODE ===== */
+        .vr-section {
+            padding: 100px 0;
+            background: rgba(5, 15, 30, 0.5);
+            text-align: center;
+        }
+        
+        .vr-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .vr-headset {
+            font-size: 120px;
+            color: #00b4d8;
+            margin-bottom: 30px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .vr-content h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .vr-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .vr-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: rgba(5, 15, 30, 0.95);
+            padding: 80px 0 30px;
+            border-top: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: #00b4d8;
+        }
+        
+        .footer-column p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1200px) {
+            .viewer-container {
+                grid-template-columns: 1fr;
+                height: 800px;
+            }
+            
+            .viewer-info {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+            
+            nav ul {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 25, 47, 0.98);
+                flex-direction: column;
+                padding: 30px;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s;
+                z-index: 999;
+            }
+            
+            nav ul.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            
+            .viewer-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .vr-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .environment-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .viewer-controls {
+                flex-wrap: wrap;
+                width: 90%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header id="header">
+        <div class="container">
+            <div class="header-container">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-main">THALASSA</div>
+                        <div class="logo-sub">DIVE CENTER</div>
+                    </div>
+                </a>
+                
+                <div class="mobile-menu" id="mobileMenu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <nav>
+                    <ul id="navMenu">
+                        <li><a href="#home" class="active">Home</a></li>
+                        <li><a href="#viewer">3D Viewer</a></li>
+                        <li><a href="#locations">Locations</a></li>
+                        <li><a href="#equipment">Equipment</a></li>
+                        <li><a href="#vr">VR Mode</a></li>
+                        <li><a href="#" class="btn-book">Book a Dive</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="viewer-hero" id="home">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-vr-cardboard"></i>
+                <span>IMMERSIVE 3D EXPERIENCE</span>
+            </div>
+            <h1>Explore Oceans in 360°</h1>
+            <p>Dive into our interactive 3D viewer and experience the wonders of the underwater world from anywhere. Rotate, zoom, and explore marine environments with realistic physics and detailed ecosystems.</p>
+            <div class="hero-buttons">
+                <a href="#viewer" class="btn-primary">
+                    <i class="fas fa-play-circle"></i>
+                    Launch Viewer
+                </a>
+                <a href="#vr" class="btn-secondary">
+                    <i class="fas fa-vr-cardboard"></i>
+                    VR Mode
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Main 3D Viewer -->
+    <section class="viewer-section" id="viewer">
+        <div class="container">
+            <h2 class="section-title">Interactive 3D Dive Viewer</h2>
+            <p class="section-subtitle">Drag to rotate • Scroll to zoom • Click to explore marine life</p>
+            
+            <div class="viewer-container">
+                <div class="viewer-3d">
+                    <div class="viewer-canvas" id="viewerCanvas">
+                        <!-- 3D Canvas will be created by JavaScript -->
+                        <div class="canvas-placeholder">
+                            <i class="fas fa-water" style="font-size: 100px; color: #00b4d8; margin-bottom: 20px;"></i>
+                            <h3 style="color: white; margin-bottom: 10px;">Loading 3D Environment...</h3>
+                            <p style="color: rgba(255,255,255,0.7);">This interactive viewer simulates underwater diving experiences</p>
+                        </div>
+                    </div>
+                    
+                    <div class="viewer-controls">
+                        <button class="control-btn" id="resetView" title="Reset View">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="control-btn" id="zoomIn" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="control-btn" id="zoomOut" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="control-btn" id="toggleLight" title="Toggle Light">
+                            <i class="fas fa-lightbulb"></i>
+                        </button>
+                        <button class="control-btn" id="toggleFish" title="Toggle Marine Life">
+                            <i class="fas fa-fish"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="viewer-info">
+                    <h3><i class="fas fa-info-circle"></i> Dive Information</h3>
+                    
+                    <div class="depth-indicator">
+                        <div style="display: flex; justify-content: space-between; color: white;">
+                            <span>Current Depth</span>
+                            <span id="currentDepth">18.5m</span>
+                        </div>
+                        <div class="depth-meter">
+                            <div class="depth-fill" id="depthFill"></div>
+                        </div>
+                        <div class="depth-markers">
+                            <span>0m</span>
+                            <span>10m</span>
+                            <span>20m</span>
+                            <span>30m</span>
+                            <span>40m</span>
+                        </div>
+                    </div>
+                    
+                    <div class="environment-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="waterTemp">24°C</div>
+                            <div class="stat-label">Water Temperature</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="visibility">30m</div>
+                            <div class="stat-label">Visibility</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="diveTime">45min</div>
+                            <div class="stat-label">Dive Time</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="pressure">3.2bar</div>
+                            <div class="stat-label">Tank Pressure</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;"><i class="fas fa-fish"></i> Marine Life Spotted</h3>
+                    <ul class="marine-life-list">
+                        <li><i class="fas fa-check-circle"></i> Clownfish (5)</li>
+                        <li><i class="fas fa-check-circle"></i> Sea Turtle (1)</li>
+                        <li><i class="fas fa-check-circle"></i> Blue Tang (12)</li>
+                        <li><i class="fas fa-check-circle"></i> Parrotfish (3)</li>
+                        <li><i class="fas fa-check-circle"></i> Manta Ray (2)</li>
+                        <li><i class="fas fa-check-circle"></i> Moray Eel (1)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Locations -->
+    <section class="locations-section" id="locations">
+        <div class="container">
+            <h2 class="section-title">Explore Dive Locations</h2>
+            <p class="section-subtitle">Click on any location to load it in the 3D viewer above</p>
+            
+            <div class="locations-grid">
+                <div class="location-card active" data-location="coral-reef">
+                    <div class="location-image" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070');"></div>
+                    <div class="location-content">
+                        <h3>Coral Garden Reef</h3>
+                        <p>Vibrant coral formations with abundant marine life. Perfect for beginner and intermediate divers.</p>
+                        <div class="location-tags">
+                            <span class="location-tag">Beginner</span>
+                            <span class="location-tag">Shallow</span>
+                            <span class="location-tag">Photography</span>
+                        </div>
+                        <div style="color: #00b4d8; font-size: 0.9rem;">
+                            <i class="fas fa-map-marker-alt"></i> Bali, Indonesia
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card" data-location="wreck">
+                    <div class="location-image" style="background-image: url('https://images.unsplash.com/photo-1519904981063-b0cf448d479e?q=80&w=2070');"></div>
+                    <div class="location-content">
+                        <h3>SS Thistlegorm Wreck</h3>
+                        <p>World War II shipwreck with historical artifacts and diverse marine ecosystem.</p>
+                        <div class="location-tags">
+                            <span class="location-tag">Advanced</span>
+                            <span class="location-tag">Deep</span>
+                            <span class="location-tag">History</span>
+                        </div>
+                        <div style="color: #00b4d8; font-size: 0.9rem;">
+                            <i class="fas fa-map-marker-alt"></i> Red Sea, Egypt
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card" data-location="cave">
+                    <div class="location-image" style="background-image: url('https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?q=80&w=2071');"></div>
+                    <div class="location-content">
+                        <h3>Blue Hole Cavern</h3>
+                        <p>Dramatic underwater cavern with light beams and unique geological formations.</p>
+                        <div class="location-tags">
+                            <span class="location-tag">Expert</span>
+                            <span class="location-tag">Cavern</span>
+                            <span class="location-tag">Adventure</span>
+                        </div>
+                        <div style="color: #00b4d8; font-size: 0.9rem;">
+                            <i class="fas fa-map-marker-alt"></i> Belize
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Panel -->
+    <section class="equipment-section" id="equipment">
+        <div class="container">
+            <h2 class="section-title">Dive Equipment</h2>
+            <p class="section-subtitle">Click on equipment to see it in action in the 3D viewer</p>
+            
+            <div class="equipment-grid">
+                <div class="equipment-item active" data-equipment="mask">
+                    <div class="equipment-icon">
+                        <i class="fas fa-swimmer"></i>
+                    </div>
+                    <h4>Dive Mask</h4>
+                    <p>Crystal clear vision with anti-fog coating</p>
+                </div>
+                
+                <div class="equipment-item" data-equipment="bcd">
+                    <div class="equipment-icon">
+                        <i class="fas fa-life-ring"></i>
+                    </div>
+                    <h4>Buoyancy Control</h4>
+                    <p>Precision buoyancy adjustment system</p>
+                </div>
+                
+                <div class="equipment-item" data-equipment="regulator">
+                    <div class="equipment-icon">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <h4>Regulator</h4>
+                    <p>High-performance breathing apparatus</p>
+                </div>
+                
+                <div class="equipment-item" data-equipment="fins">
+                    <div class="equipment-icon">
+                        <i class="fas fa-shoe-prints"></i>
+                    </div>
+                    <h4>Power Fins</h4>
+                    <p>Efficient propulsion with minimal effort</p>
+                </div>
+                
+                <div class="equipment-item" data-equipment="camera">
+                    <div class="equipment-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h4>Underwater Camera</h4>
+                    <p>4K video and 20MP photo capability</p>
+                </div>
+                
+                <div class="equipment-item" data-equipment="light">
+                    <div class="equipment-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h4>Dive Light</h4>
+                    <p>2000 lumen LED for deep exploration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VR Mode Section -->
+    <section class="vr-section" id="vr">
+        <div class="container">
+            <div class="vr-container">
+                <div class="vr-headset">
+                    <i class="fas fa-vr-cardboard"></i>
+                </div>
+                
+                <div class="vr-content">
+                    <h2>Virtual Reality Experience</h2>
+                    <p>For the ultimate immersive experience, use our VR mode with your virtual reality headset. Feel like you're actually diving in some of the world's most beautiful underwater locations with 360° spatial audio and realistic physics simulation.</p>
+                    
+                    <div class="vr-buttons">
+                        <a href="#" class="btn-primary" style="padding: 15px 40px;">
+                            <i class="fas fa-vr-cardboard"></i>
+                            Launch VR Mode
+                        </a>
+                        <a href="#" class="btn-secondary" style="padding: 15px 40px;">
+                            <i class="fas fa-mobile-alt"></i>
+                            Mobile Viewer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Thalassa Dive Center</h3>
+                    <p>Pioneering immersive dive experiences through 3D technology and virtual reality since 2015.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#viewer"><i class="fas fa-chevron-right"></i> 3D Viewer</a></li>
+                        <li><a href="#locations"><i class="fas fa-chevron-right"></i> Locations</a></li>
+                        <li><a href="#equipment"><i class="fas fa-chevron-right"></i> Equipment</a></li>
+                        <li><a href="#vr"><i class="fas fa-chevron-right"></i> VR Mode</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Technology</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-cube"></i> WebGL 3D Engine</a></li>
+                        <li><a href="#"><i class="fas fa-vr-cardboard"></i> VR Integration</a></li>
+                        <li><a href="#"><i class="fas fa-water"></i> Physics Simulation</a></li>
+                        <li><a href="#"><i class="fas fa-fish"></i> Marine AI</a></li>
+                        <li><a href="#"><i class="fas fa-cloud"></i> Cloud Processing</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> 456 Ocean Tech Park</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +1 (555) 987-6543</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> tech@thalassadive.com</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> 24/7 Tech Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Thalassa Dive Center. All rights reserved. | 3D Technology Powered by OceanView Pro</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobileMenu');
+        const navMenu = document.getElementById('navMenu');
+        const header = document.getElementById('header');
+        const viewerCanvas = document.getElementById('viewerCanvas');
+        const locationCards = document.querySelectorAll('.location-card');
+        const equipmentItems = document.querySelectorAll('.equipment-item');
+        const controlButtons = {
+            reset: document.getElementById('resetView'),
+            zoomIn: document.getElementById('zoomIn'),
+            zoomOut: document.getElementById('zoomOut'),
+            toggleLight: document.getElementById('toggleLight'),
+            toggleFish: document.getElementById('toggleFish')
+        };
+        
+        // 3D Viewer State
+        const viewerState = {
+            currentLocation: 'coral-reef',
+            currentEquipment: 'mask',
+            zoomLevel: 1.0,
+            lightOn: true,
+            fishVisible: true,
+            depth: 18.5,
+            rotation: { x: 0, y: 0 }
+        };
+        
+        // Toggle Mobile Menu
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navMenu.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Location Cards Selection
+        locationCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active class from all cards
+                locationCards.forEach(c => c.classList.remove('active'));
+                // Add active class to clicked card
+                card.classList.add('active');
+                
+                // Update viewer state
+                const location = card.dataset.location;
+                viewerState.currentLocation = location;
+                
+                // Update viewer display based on location
+                updateViewerForLocation(location);
+                
+                // Animate depth indicator
+                animateDepthChange();
+            });
+        });
+        
+        // Equipment Items Selection
+        equipmentItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all items
+                equipmentItems.forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                item.classList.add('active');
+                
+                // Update viewer state
+                const equipment = item.dataset.equipment;
+                viewerState.currentEquipment = equipment;
+                
+                // Show equipment info
+                showEquipmentInfo(equipment);
+            });
+        });
+        
+        // Control Button Handlers
+        controlButtons.reset.addEventListener('click', () => {
+            viewerState.zoomLevel = 1.0;
+            viewerState.rotation = { x: 0, y: 0 };
+            updateViewerControls();
+            showMessage('View reset to default position');
+        });
+        
+        controlButtons.zoomIn.addEventListener('click', () => {
+            viewerState.zoomLevel = Math.min(viewerState.zoomLevel + 0.2, 3.0);
+            updateViewerControls();
+            showMessage(`Zoom: ${Math.round(viewerState.zoomLevel * 100)}%`);
+        });
+        
+        controlButtons.zoomOut.addEventListener('click', () => {
+            viewerState.zoomLevel = Math.max(viewerState.zoomLevel - 0.2, 0.5);
+            updateViewerControls();
+            showMessage(`Zoom: ${Math.round(viewerState.zoomLevel * 100)}%`);
+        });
+        
+        controlButtons.toggleLight.addEventListener('click', () => {
+            viewerState.lightOn = !viewerState.lightOn;
+            updateViewerControls();
+            showMessage(viewerState.lightOn ? 'Dive light ON' : 'Dive light OFF');
+        });
+        
+        controlButtons.toggleFish.addEventListener('click', () => {
+            viewerState.fishVisible = !viewerState.fishVisible;
+            updateViewerControls();
+            showMessage(viewerState.fishVisible ? 'Marine life visible' : 'Marine life hidden');
+        });
+        
+        // Update viewer based on location
+        function updateViewerForLocation(location) {
+            const depthFill = document.getElementById('depthFill');
+            const currentDepth = document.getElementById('currentDepth');
+            const waterTemp = document.getElementById('waterTemp');
+            const visibility = document.getElementById('visibility');
+            
+            // Simulate different environments based on location
+            switch(location) {
+                case 'coral-reef':
+                    viewerState.depth = 12.5;
+                    depthFill.style.width = '31%';
+                    currentDepth.textContent = '12.5m';
+                    waterTemp.textContent = '28°C';
+                    visibility.textContent = '25m';
+                    showMessage('Loading Coral Garden Reef environment...');
+                    break;
+                    
+                case 'wreck':
+                    viewerState.depth = 28.0;
+                    depthFill.style.width = '70%';
+                    currentDepth.textContent = '28.0m';
+                    waterTemp.textContent = '22°C';
+                    visibility.textContent = '15m';
+                    showMessage('Loading SS Thistlegorm wreck dive...');
+                    break;
+                    
+                case 'cave':
+                    viewerState.depth = 35.5;
+                    depthFill.style.width = '88%';
+                    currentDepth.textContent = '35.5m';
+                    waterTemp.textContent = '20°C';
+                    visibility.textContent = '10m';
+                    showMessage('Loading Blue Hole cavern dive...');
+                    break;
+            }
+            
+            // Animate depth change
+            animateDepthChange();
+        }
+        
+        // Show equipment information
+        function showEquipmentInfo(equipment) {
+            const messages = {
+                mask: 'Dive mask equipped. Anti-fog coating active.',
+                bcd: 'Buoyancy control device activated. Adjusting trim.',
+                regulator: 'Primary regulator selected. Secondary backup available.',
+                fins: 'Power fins equipped. Increased propulsion efficiency.',
+                camera: 'Underwater camera activated. 4K recording started.',
+                light: 'Dive light toggled. 2000 lumen output.'
+            };
+            
+            if (messages[equipment]) {
+                showMessage(messages[equipment]);
+            }
+        }
+        
+        // Update viewer controls display
+        function updateViewerControls() {
+            // Update button states
+            controlButtons.toggleLight.innerHTML = viewerState.lightOn ? 
+                '<i class="fas fa-lightbulb"></i>' : '<i class="far fa-lightbulb"></i>';
+            
+            controlButtons.toggleFish.innerHTML = viewerState.fishVisible ? 
+                '<i class="fas fa-fish"></i>' : '<i class="fas fa-eye-slash"></i>';
+        }
+        
+        // Animate depth change
+        function animateDepthChange() {
+            const depthFill = document.getElementById('depthFill');
+            const pressureElement = document.getElementById('pressure');
+            const diveTimeElement = document.getElementById('diveTime');
+            
+            // Calculate new pressure based on depth (simplified)
+            const newPressure = (viewerState.depth / 10 * 1.0 + 2.0).toFixed(1);
+            pressureElement.textContent = newPressure + 'bar';
+            
+            // Calculate dive time (simplified)
+            const baseTime = 60; // minutes
+            const depthFactor = Math.max(1 - (viewerState.depth - 10) / 100, 0.3);
+            const newDiveTime = Math.round(baseTime * depthFactor);
+            diveTimeElement.textContent = newDiveTime + 'min';
+            
+            // Update marine life list based on depth
+            updateMarineLifeList();
+        }
+        
+        // Update marine life list
+        function updateMarineLifeList() {
+            const marineLifeList = document.querySelector('.marine-life-list');
+            
+            // Different marine life based on location and depth
+            const marineLife = {
+                'coral-reef': [
+                    { name: 'Clownfish', count: Math.floor(Math.random() * 5) + 3 },
+                    { name: 'Blue Tang', count: Math.floor(Math.random() * 8) + 8 },
+                    { name: 'Parrotfish', count: Math.floor(Math.random() * 3) + 2 },
+                    { name: 'Sea Turtle', count: 1 },
+                    { name: 'Angelfish', count: Math.floor(Math.random() * 6) + 4 }
+                ],
+                'wreck': [
+                    { name: 'Lionfish', count: Math.floor(Math.random() * 3) + 1 },
+                    { name: 'Moray Eel', count: 1 },
+                    { name: 'Barracuda', count: Math.floor(Math.random() * 3) + 2 },
+                    { name: 'Batfish', count: Math.floor(Math.random() * 5) + 3 },
+                    { name: 'Wreckfish', count: Math.floor(Math.random() * 4) + 2 }
+                ],
+                'cave': [
+                    { name: 'Blind Cave Fish', count: Math.floor(Math.random() * 8) + 5 },
+                    { name: 'Stingray', count: Math.floor(Math.random() * 2) + 1 },
+                    { name: 'Grouper', count: Math.floor(Math.random() * 3) + 2 },
+                    { name: 'Lobster', count: Math.floor(Math.random() * 4) + 1 },
+                    { name: 'Cave Shrimp', count: Math.floor(Math.random() * 10) + 8 }
+                ]
+            };
+            
+            // Clear current list
+            marineLifeList.innerHTML = '';
+            
+            // Add new items
+            const currentLocation = viewerState.currentLocation;
+            if (marineLife[currentLocation]) {
+                marineLife[currentLocation].forEach(creature => {
+                    if (viewerState.fishVisible) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fas fa-check-circle"></i> ${creature.name} (${creature.count})`;
+                        marineLifeList.appendChild(li);
+                    }
+                });
+            }
+        }
+        
+        // Show temporary message
+        function showMessage(message) {
+            // Create message element if it doesn't exist
+            let messageEl = document.querySelector('.viewer-message');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.className = 'viewer-message';
+                messageEl.style.cssText = `
+                    position: absolute;
+                    top: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0, 180, 216, 0.9);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 50px;
+                    font-weight: 600;
+                    z-index: 100;
+                    backdrop-filter: blur(10px);
+                    animation: fadeInOut 3s ease;
+                `;
+                
+                // Add style for animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeInOut {
+                        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                        10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                        90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.querySelector('.viewer-3d').appendChild(messageEl);
+            }
+            
+            // Update message and show
+            messageEl.textContent = message;
+            messageEl.style.animation = 'none';
+            setTimeout(() => {
+                messageEl.style.animation = 'fadeInOut 3s ease';
+            }, 10);
+            
+            // Remove after animation
+            setTimeout(() => {
+                messageEl.remove();
+            }, 3000);
+        }
+        
+        // Mouse interaction for 3D viewer
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        
+        viewerCanvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            viewerCanvas.style.cursor = 'grabbing';
+        });
+        
+        viewerCanvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - lastMouseX;
+            const deltaY = e.clientY - lastMouseY;
+            
+            viewerState.rotation.y += deltaX * 0.5;
+            viewerState.rotation.x += deltaY * 0.5;
+            
+            // Constrain rotation
+            viewerState.rotation.x = Math.max(-90, Math.min(90, viewerState.rotation.x));
+            
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            
+            // Update visual rotation indicator
+            updateViewerRotation();
+        });
+        
+        viewerCanvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            viewerCanvas.style.cursor = 'grab';
+        });
+        
+        viewerCanvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            viewerCanvas.style.cursor = 'grab';
+        });
+        
+        // Mouse wheel for zoom
+        viewerCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            viewerState.zoomLevel += e.deltaY * -0.001;
+            viewerState.zoomLevel = Math.max(0.5, Math.min(3.0, viewerState.zoomLevel));
+            updateViewerControls();
+        });
+        
+        // Update viewer rotation visualization
+        function updateViewerRotation() {
+            // In a real 3D implementation, this would update the camera rotation
+            // For this demo, we'll just update a visual indicator
+            const rotationInfo = document.querySelector('.rotation-info');
+            if (!rotationInfo) {
+                const info = document.createElement('div');
+                info.className = 'rotation-info';
+                info.style.cssText = `
+                    position: absolute;
+                    bottom: 100px;
+                    left: 20px;
+                    color: white;
+                    background: rgba(0,0,0,0.5);
+                    padding: 10px 15px;
+                    border-radius: 10px;
+                    font-size: 0.9rem;
+                    backdrop-filter: blur(5px);
+                `;
+                viewerCanvas.appendChild(info);
+            }
+            
+            const rotationElement = document.querySelector('.rotation-info') || document.createElement('div');
+            rotationElement.innerHTML = `
+                Rotation: X: ${Math.round(viewerState.rotation.x)}° Y: ${Math.round(viewerState.rotation.y)}°<br>
+                Zoom: ${Math.round(viewerState.zoomLevel * 100)}%
+            `;
+            
+            // Remove after 2 seconds if not dragging
+            if (!isDragging) {
+                setTimeout(() => {
+                    if (rotationElement.parentNode && !isDragging) {
+                        rotationElement.remove();
+                    }
+                }, 2000);
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Trigger initial scroll effect for header
+            window.dispatchEvent(new Event('scroll'));
+            
+            // Initialize viewer controls
+            updateViewerControls();
+            updateViewerForLocation('coral-reef');
+            
+            // Show welcome message
+            setTimeout(() => {
+                showMessage('Welcome to the 3D Dive Experience! Drag to rotate, scroll to zoom.');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
