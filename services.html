@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services & Packages | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== SERVICES PAGE SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #0077b6;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* ===== SERVICES HERO ===== */
+        .services-hero {
+            background: linear-gradient(rgba(2, 62, 138, 0.8), rgba(0, 119, 182, 0.8)), 
+                        url('https://images.unsplash.com/photo-1580519542036-c47de6196ba5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding-top: 120px;
+            margin-bottom: 80px;
+        }
+        
+        .services-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .services-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        /* ===== PACKAGES GRID ===== */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: #023e8a;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .package-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .package-header {
+            background: #023e8a;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .package-icon {
+            font-size: 50px;
+            color: #00b4d8;
+            margin-bottom: 15px;
+        }
+        
+        .package-header h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .package-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00b4d8;
+        }
+        
+        .package-price span {
+            font-size: 1rem;
+            font-weight: normal;
+            color: white;
+        }
+        
+        .package-features {
+            padding: 30px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-list i {
+            color: #00b4d8;
+        }
+        
+        .package-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #00b4d8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .package-button:hover {
+            background: #0077b6;
+        }
+        
+        .featured-package {
+            transform: scale(1.05);
+            position: relative;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff6b35;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== EQUIPMENT SECTION ===== */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .equipment-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .equipment-icon {
+            font-size: 40px;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+        
+        .equipment-card h3 {
+            color: #023e8a;
+            margin-bottom: 15px;
+        }
+        
+        /* ===== CTA SECTION ===== */
+        .cta {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-top: 50px;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: #023e8a;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .featured-package {
+                transform: scale(1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .services-hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .packages-grid,
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .services-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html" class="active">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Hero -->
+    <section class="services-hero">
+        <div class="container">
+            <h1>Dive Packages & Services</h1>
+            <p>Choose from our carefully crafted diving packages designed for every level and preference. Let our AI recommender help you find the perfect match!</p>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dive Packages</h2>
+                <p>All packages include equipment rental, guide service, and refreshments</p>
+            </div>
+            
+            <div class="packages-grid">
+                <!-- Beginner Package -->
+                <div class="package-card">
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-swimmer"></i>
+                        </div>
+                        <h3>Beginner Discovery</h3>
+                        <div class="package-price">$99<span>/person</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Discover Scuba Diving Experience</li>
+                            <li><i class="fas fa-check"></i> 1 Guided Dive (max 12m depth)</li>
+                            <li><i class="fas fa-check"></i> Full Equipment Rental</li>
+                            <li><i class="fas fa-check"></i> Pool Training Session</li>
+                            <li><i class="fas fa-check"></i> PADI Certified Instructor</li>
+                            <li><i class="fas fa-check"></i> Refreshments on Boat</li>
+                        </ul>
+                        <a href="contact.html?package=beginner" class="package-button">Book Now</a>
+                    </div>
+                </div>
+                
+                <!-- Most Popular Package -->
+                <div class="package-card featured-package">
+                    <div class="featured-badge">MOST POPULAR</div>
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <h3>Reef Explorer</h3>
+                        <div class="package-price">$149<span>/person</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> 2 Guided Reef Dives</li>
+                            <li><i class="fas fa-check"></i> Different Dive Sites</li>
+                            <li><i class="fas fa-check"></i> Full Equipment Rental</li>
+                            <li><i class="fas fa-check"></i> Underwater Photography</li>
+                            <li><i class="fas fa-check"></i> Marine Life Identification</li>
+                            <li><i class="fas fa-check"></i> Lunch & Refreshments</li>
+                            <li><i class="fas fa-check"></i> Digital Photos Included</li>
+                        </ul>
+                        <a href="contact.html?package=reef-explorer" class="package-button">Book Now</a>
+                    </div>
+                </div>
+                
+                <!-- Advanced Package -->
+                <div class="package-card">
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <h3>Advanced Adventure</h3>
+                        <div class="package-price">$199<span>/person</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> 3 Guided Dives</li>
+                            <li><i class="fas fa-check"></i> Deep Dive (max 30m)</li>
+                            <li><i class="fas fa-check"></i> Wreck Dive Experience</li>
+                            <li><i class="fas fa-check"></i> Night Dive Option</li>
+                            <li><i class="fas fa-check"></i> Premium Equipment</li>
+                            <li><i class="fas fa-check"></i> Full Day Trip</li>
+                            <li><i class="fas fa-check"></i> GoPro Rental Included</li>
+                        </ul>
+                        <a href="contact.html?package=advanced" class="package-button">Book Now</a>
+                    </div>
+                </div>
+                
+                <!-- Family Package -->
+                <div class="package-card">
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Family Fun</h3>
+                        <div class="package-price">$399<span>/family</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> 2 Adults + 2 Children</li>
+                            <li><i class="fas fa-check"></i> Snorkeling & Diving Combo</li>
+                            <li><i class="fas fa-check"></i> Kids' Activities</li>
+                            <li><i class="fas fa-check"></i> Separate Guides for Kids</li>
+                            <li><i class="fas fa-check"></i> Private Boat Section</li>
+                            <li><i class="fas fa-check"></i> Family Lunch Package</li>
+                            <li><i class="fas fa-check"></i> Souvenir Photos</li>
+                        </ul>
+                        <a href="contact.html?package=family" class="package-button">Book Now</a>
+                    </div>
+                </div>
+                
+                <!-- Multi-Day Package -->
+                <div class="package-card">
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>3-Day Explorer</h3>
+                        <div class="package-price">$499<span>/person</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> 6 Guided Dives Total</li>
+                            <li><i class="fas fa-check"></i> Different Sites Each Day</li>
+                            <li><i class="fas fa-check"></i> Advanced Open Water Option</li>
+                            <li><i class="fas fa-check"></i> Accommodation Discount</li>
+                            <li><i class="fas fa-check"></i> Transportation Included</li>
+                            <li><i class="fas fa-check"></i> Dive Log Completion</li>
+                            <li><i class="fas fa-check"></i> Certificate of Completion</li>
+                        </ul>
+                        <a href="contact.html?package=3day" class="package-button">Book Now</a>
+                    </div>
+                </div>
+                
+                <!-- VIP Package -->
+                <div class="package-card">
+                    <div class="package-header">
+                        <div class="package-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3>VIP Private</h3>
+                        <div class="package-price">$899<span>/group</span></div>
+                    </div>
+                    <div class="package-features">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Private Boat Charter</li>
+                            <li><i class="fas fa-check"></i> Dedicated Dive Master</li>
+                            <li><i class="fas fa-check"></i> Custom Dive Locations</li>
+                            <li><i class="fas fa-check"></i> Premium Catering</li>
+                            <li><i class="fas fa-check"></i> Professional Photographer</li>
+                            <li><i class="fas fa-check"></i> Flexible Schedule</li>
+                            <li><i class="fas fa-check"></i> Luxury Amenities</li>
+                        </ul>
+                        <a href="contact.html?package=vip" class="package-button">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Section -->
+    <section class="section" style="background: #f0f8ff;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Premium Equipment Rental</h2>
+                <p>We use only the best, regularly serviced equipment for your safety and comfort</p>
+            </div>
+            
+            <div class="equipment-grid">
+                <div class="equipment-card">
+                    <div class="equipment-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Regulators & BCDs</h3>
+                    <p>Latest models from Scubapro and Aqua Lung, serviced monthly</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <div class="equipment-icon">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <h3>Tanks & Air</h3>
+                    <p>High-pressure steel and aluminum tanks with premium filtered air</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <div class="equipment-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Wetsuits</h3>
+                    <p>Full 3mm and 5mm wetsuits available in all sizes, including children</p>
+                </div>
+                
+                <div class="equipment-card">
+                    <div class="equipment-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Underwater Cameras</h3>
+                    <p>GoPro rentals with mounts and filters for capturing your adventure</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Recommender CTA -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Not Sure Which Package?</h2>
+                <p>Let our AI dive recommender find the perfect package for your experience level, budget, and preferences</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="ai-recommender.html" class="btn btn-primary" style="padding: 20px 50px; font-size: 1.2rem;">
+                    <i class="fas fa-robot"></i> Get AI Recommendations
+                </a>
+                <p style="margin-top: 20px; color: #666;">Answer 5 simple questions for personalized dive package suggestions</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Book Your Dive?</h2>
+            <p>Contact us directly for custom packages or group discounts</p>
+            
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn btn-primary">Book Now</a>
+                <a href="tel:+255769474643" class="btn btn-secondary">
+                    <i class="fas fa-phone-alt"></i> Call Us
+                </a>
+                <a href="https://wa.me/255769474643" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Package selection from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const packageParam = urlParams.get('package');
+            if (packageParam) {
+                // Scroll to the specific package
+                setTimeout(() => {
+                    const packageElement = document.querySelector(`[href*="${packageParam}"]`);
+                    if (packageElement) {
+                        packageElement.closest('.package-card').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
