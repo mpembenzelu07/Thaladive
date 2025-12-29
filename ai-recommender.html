@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dive Recommender | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== AI RECOMMENDER PAGE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER ===== */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #0077b6;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* ===== AI RECOMMENDER HERO ===== */
+        .ai-hero {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 150px 0 80px;
+        }
+        
+        .ai-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .ai-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .ai-icon {
+            font-size: 80px;
+            color: #00b4d8;
+            margin-bottom: 30px;
+        }
+        
+        /* ===== QUESTIONNAIRE ===== */
+        .questionnaire-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 50px;
+            margin: -50px auto 80px;
+            max-width: 800px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00b4d8;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .question-step.active {
+            display: block;
+        }
+        
+        .question-number {
+            color: #00b4d8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            color: #023e8a;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .option-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option-card:hover {
+            border-color: #00b4d8;
+            transform: translateY(-5px);
+        }
+        
+        .option-card.selected {
+            background: #e6f7ff;
+            border-color: #00b4d8;
+            box-shadow: 0 5px 20px rgba(0,180,216,0.2);
+        }
+        
+        .option-icon {
+            font-size: 30px;
+            color: #00b4d8;
+            margin-bottom: 15px;
+        }
+        
+        .option-text {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-prev {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+        
+        .btn-prev:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-next {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-submit {
+            background: #ff6b35;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #e55a2b;
+            transform: translateY(-3px);
+        }
+        
+        /* ===== RESULTS SECTION ===== */
+        .results-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .result-header {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .result-icon {
+            font-size: 60px;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+        
+        .result-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .match-percentage {
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .result-content {
+            padding: 40px;
+        }
+        
+        .result-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .feature-icon {
+            color: #00b4d8;
+            font-size: 24px;
+            margin-top: 3px;
+        }
+        
+        .price-tag {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .alternative-packages {
+            margin-top: 50px;
+        }
+        
+        .alternative-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .alternative-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .alternative-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: #023e8a;
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .questionnaire-container {
+                padding: 30px;
+                margin: -30px 20px 60px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ai-hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .ai-hero {
+                padding: 120px 0 60px;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .ai-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.3rem;
+            }
+            
+            .questionnaire-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- AI Recommender Hero -->
+    <section class="ai-hero">
+        <div class="container">
+            <div class="ai-icon">
+                <i class="fas fa-robot pulse"></i>
+            </div>
+            <h1>AI Dive Package Recommender</h1>
+            <p>Answer 5 simple questions and our AI will find the perfect dive package for your experience level, preferences, and budget</p>
+        </div>
+    </section>
+
+    <!-- Questionnaire -->
+    <div class="container">
+        <div class="questionnaire-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <!-- Question 1 -->
+            <div class="question-step active" id="step1">
+                <div class="question-number">Question 1 of 5</div>
+                <h2 class="question-text">What is your diving experience level?</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card" data-value="beginner">
+                        <div class="option-icon">
+                            <i class="fas fa-swimmer"></i>
+                        </div>
+                        <div class="option-text">Beginner / First Time</div>
+                        <small>Never dived before or less than 5 dives</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="novice">
+                        <div class="option-icon">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <div class="option-text">Novice Diver</div>
+                        <small>Open Water certified, 5-20 logged dives</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="intermediate">
+                        <div class="option-icon">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <div class="option-text">Intermediate</div>
+                        <small>Advanced Open Water, 20-50 logged dives</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="advanced">
+                        <div class="option-icon">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <div class="option-text">Advanced / Pro</div>
+                        <small>Rescue or Divemaster, 50+ logged dives</small>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="btn btn-prev" disabled>
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-next" onclick="nextQuestion()">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question 2 -->
+            <div class="question-step" id="step2">
+                <div class="question-number">Question 2 of 5</div>
+                <h2 class="question-text">What type of diving interests you most?</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card" data-value="reef">
+                        <div class="option-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="option-text">Coral Reef Exploration</div>
+                        <small>Colorful corals, tropical fish, gentle currents</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="wreck">
+                        <div class="option-icon">
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <div class="option-text">Wreck Diving</div>
+                        <small>Sunken ships, historical sites, penetration</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="wall">
+                        <div class="option-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <div class="option-text">Wall & Deep Diving</div>
+                        <small>Dramatic drop-offs, deep water species</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="night">
+                        <div class="option-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div class="option-text">Night Diving</div>
+                        <small>Nocturnal marine life, bioluminescence</small>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="btn btn-prev" onclick="prevQuestion()">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-next" onclick="nextQuestion()">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question 3 -->
+            <div class="question-step" id="step3">
+                <div class="question-number">Question 3 of 5</div>
+                <h2 class="question-text">What is your preferred dive duration?</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card" data-value="single">
+                        <div class="option-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="option-text">Single Dive Day Trip</div>
+                        <small>Half day, 1-2 dives, return by afternoon</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="double">
+                        <div class="option-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="option-text">Two-Tank Dive Day</div>
+                        <small>Full day, 2 dives at different sites</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="multi">
+                        <div class="option-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="option-text">Multi-Day Package</div>
+                        <small>3+ days, different sites each day</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="course">
+                        <div class="option-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="option-text">Certification Course</div>
+                        <small>2-4 days, includes theory and practice</small>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="btn btn-prev" onclick="prevQuestion()">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-next" onclick="nextQuestion()">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question 4 -->
+            <div class="question-step" id="step4">
+                <div class="question-number">Question 4 of 5</div>
+                <h2 class="question-text">What is your budget per person?</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card" data-value="budget">
+                        <div class="option-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="option-text">Budget ($50-$100)</div>
+                        <small>Basic equipment, group dive, no extras</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="standard">
+                        <div class="option-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="option-text">Standard ($100-$200)</div>
+                        <small>Good equipment, photos included, lunch</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="premium">
+                        <div class="option-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="option-text">Premium ($200-$400)</div>
+                        <small>Premium equipment, small group, extras</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="luxury">
+                        <div class="option-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="option-text">Luxury ($400+)</div>
+                        <small>Private guide, custom sites, all inclusive</small>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="btn btn-prev" onclick="prevQuestion()">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-next" onclick="nextQuestion()">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Question 5 -->
+            <div class="question-step" id="step5">
+                <div class="question-number">Question 5 of 5</div>
+                <h2 class="question-text">Are you traveling solo or with others?</h2>
+                
+                <div class="options-grid">
+                    <div class="option-card" data-value="solo">
+                        <div class="option-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="option-text">Solo Traveler</div>
+                        <small>Joining a group, meeting new people</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="couple">
+                        <div class="option-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="option-text">Couple / Pair</div>
+                        <small>Diving together, private or semi-private</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="family">
+                        <div class="option-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="option-text">Family / Group</div>
+                        <small>Mixed experience levels, family discount</small>
+                    </div>
+                    
+                    <div class="option-card" data-value="friends">
+                        <div class="option-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="option-text">Friends Group</div>
+                        <small>All certified, want to dive together</small>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="btn btn-prev" onclick="prevQuestion()">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-submit" onclick="calculateResults()">
+                        <i class="fas fa-magic"></i> Get Recommendations
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h2 id="resultTitle">Perfect Match Found!</h2>
+                        <div class="match-percentage" id="matchPercentage">95% Match</div>
+                    </div>
+                    
+                    <div class="result-content">
+                        <h3 style="color: #023e8a; margin-bottom: 20px;">Your Recommended Package: <span id="packageName">VIP Private Dive Experience</span></h3>
+                        
+                        <div class="result-features" id="packageFeatures">
+                            <!-- Features will be inserted by JavaScript -->
+                        </div>
+                        
+                        <div class="price-tag">
+                            <div class="price" id="packagePrice">$899</div>
+                            <p>Per group (max 6 people)</p>
+                        </div>
+                        
+                        <div class="result-actions">
+                            <a href="contact.html" class="btn btn-submit" style="text-decoration: none;">
+                                <i class="fas fa-calendar-check"></i> Book This Package
+                            </a>
+                            <button class="btn btn-secondary" onclick="restartQuestionnaire()">
+                                <i class="fas fa-redo"></i> Try Again
+                            </button>
+                            <a href="services.html" class="btn btn-prev" style="text-decoration: none;">
+                                <i class="fas fa-list"></i> View All Packages
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alternative-packages">
+                    <h3 style="color: #023e8a; margin-bottom: 20px;">Alternative Packages You Might Like</h3>
+                    
+                    <div class="alternative-grid" id="alternativePackages">
+                        <!-- Alternative packages will be inserted by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // AI Recommender Logic
+        const answers = {
+            experience: null,
+            interest: null,
+            duration: null,
+            budget: null,
+            group: null
+        };
+
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // Update progress bar
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progress = ((currentStep - 1) / totalSteps) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        // Select option
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from siblings
+                const siblings = this.parentElement.querySelectorAll('.option-card');
+                siblings.forEach(sib => sib.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Store the answer
+                const questionId = this.closest('.question-step').id;
+                const value = this.getAttribute('data-value');
+                
+                switch(questionId) {
+                    case 'step1': answers.experience = value; break;
+                    case 'step2': answers.interest = value; break;
+                    case 'step3': answers.duration = value; break;
+                    case 'step4': answers.budget = value; break;
+                    case 'step5': answers.group = value; break;
+                }
+            });
+        });
+
+        // Navigation functions
+        function nextQuestion() {
+            // Validate selection
+            const currentStepElement = document.getElementById(`step${currentStep}`);
+            const selected = currentStepElement.querySelector('.option-card.selected');
+            
+            if (!selected) {
+                alert('Please select an option before proceeding.');
+                return;
+            }
+            
+            // Hide current step
+            currentStepElement.classList.remove('active');
+            
+            // Show next step
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Update progress bar
+            updateProgress();
+            
+            // Scroll to top of questionnaire
+            document.querySelector('.questionnaire-container').scrollTop = 0;
+        }
+
+        function prevQuestion() {
+            // Hide current step
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Show previous step
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Update progress bar
+            updateProgress();
+            
+            // Scroll to top of questionnaire
+            document.querySelector('.questionnaire-container').scrollTop = 0;
+        }
+
+        // Package database
+        const packages = {
+            'beginner-discovery': {
+                name: 'Beginner Discovery',
+                price: '$99',
+                matchScore: 0,
+                features: [
+                    'Discover Scuba Diving Experience',
+                    '1 Guided Dive (max 12m depth)',
+                    'Full Equipment Rental',
+                    'Pool Training Session',
+                    'PADI Certified Instructor',
+                    'Refreshments on Boat'
+                ],
+                description: 'Perfect for first-time divers wanting to try scuba in a safe, controlled environment.',
+                icon: 'fa-swimmer'
+            },
+            'reef-explorer': {
+                name: 'Reef Explorer',
+                price: '$149',
+                matchScore: 0,
+                features: [
+                    '2 Guided Reef Dives',
+                    'Different Dive Sites',
+                    'Full Equipment Rental',
+                    'Underwater Photography',
+                    'Marine Life Identification',
+                    'Lunch & Refreshments',
+                    'Digital Photos Included'
+                ],
+                description: 'Ideal for certified divers wanting to explore multiple coral reef sites.',
+                icon: 'fa-fish'
+            },
+            'advanced-adventure': {
+                name: 'Advanced Adventure',
+                price: '$199',
+                matchScore: 0,
+                features: [
+                    '3 Guided Dives',
+                    'Deep Dive (max 30m)',
+                    'Wreck Dive Experience',
+                    'Night Dive Option',
+                    'Premium Equipment',
+                    'Full Day Trip',
+                    'GoPro Rental Included'
+                ],
+                description: 'For experienced divers seeking challenging dives and new experiences.',
+                icon: 'fa-ship'
+            },
+            'family-fun': {
+                name: 'Family Fun',
+                price: '$399',
+                matchScore: 0,
+                features: [
+                    '2 Adults + 2 Children',
+                    'Snorkeling & Diving Combo',
+                    'Kids\' Activities',
+                    'Separate Guides for Kids',
+                    'Private Boat Section',
+                    'Family Lunch Package',
+                    'Souvenir Photos'
+                ],
+                description: 'Designed for families with mixed experience levels.',
+                icon: 'fa-users'
+            },
+            '3-day-explorer': {
+                name: '3-Day Explorer',
+                price: '$499',
+                matchScore: 0,
+                features: [
+                    '6 Guided Dives Total',
+                    'Different Sites Each Day',
+                    'Advanced Open Water Option',
+                    'Accommodation Discount',
+                    'Transportation Included',
+                    'Dive Log Completion',
+                    'Certificate of Completion'
+                ],
+                description: 'Multi-day package for serious divers wanting comprehensive exploration.',
+                icon: 'fa-calendar-alt'
+            },
+            'vip-private': {
+                name: 'VIP Private',
+                price: '$899',
+                matchScore: 0,
+                features: [
+                    'Private Boat Charter',
+                    'Dedicated Dive Master',
+                    'Custom Dive Locations',
+                    'Premium Catering',
+                    'Professional Photographer',
+                    'Flexible Schedule',
+                    'Luxury Amenities'
+                ],
+                description: 'Ultimate luxury experience with personalized service.',
+                icon: 'fa-crown'
+            }
+        };
+
+        // Calculate match scores
+        function calculateMatchScores() {
+            // Reset scores
+            Object.keys(packages).forEach(key => {
+                packages[key].matchScore = 0;
+            });
+
+            // Experience matching
+            if (answers.experience === 'beginner') {
+                packages['beginner-discovery'].matchScore += 40;
+                packages['family-fun'].matchScore += 20;
+            } else if (answers.experience === 'novice') {
+                packages['reef-explorer'].matchScore += 30;
+                packages['3-day-explorer'].matchScore += 20;
+            } else if (answers.experience === 'intermediate') {
+                packages['advanced-adventure'].matchScore += 35;
+                packages['reef-explorer'].matchScore += 25;
+            } else if (answers.experience === 'advanced') {
+                packages['vip-private'].matchScore += 40;
+                packages['advanced-adventure'].matchScore += 30;
+            }
+
+            // Interest matching
+            if (answers.interest === 'reef') {
+                packages['reef-explorer'].matchScore += 25;
+                packages['3-day-explorer'].matchScore += 15;
+            } else if (answers.interest === 'wreck') {
+                packages['advanced-adventure'].matchScore += 30;
+                packages['vip-private'].matchScore += 20;
+            } else if (answers.interest === 'wall') {
+                packages['advanced-adventure'].matchScore += 30;
+                packages['3-day-explorer'].matchScore += 20;
+            } else if (answers.interest === 'night') {
+                packages['advanced-adventure'].matchScore += 35;
+                packages['vip-private'].matchScore += 25;
+            }
+
+            // Duration matching
+            if (answers.duration === 'single') {
+                packages['beginner-discovery'].matchScore += 15;
+                packages['reef-explorer'].matchScore += 10;
+            } else if (answers.duration === 'double') {
+                packages['reef-explorer'].matchScore += 20;
+                packages['advanced-adventure'].matchScore += 15;
+            } else if (answers.duration === 'multi') {
+                packages['3-day-explorer'].matchScore += 30;
+                packages['vip-private'].matchScore += 20;
+            } else if (answers.duration === 'course') {
+                // Course packages would be handled separately
+                packages['beginner-discovery'].matchScore += 25;
+            }
+
+            // Budget matching
+            if (answers.budget === 'budget') {
+                packages['beginner-discovery'].matchScore += 20;
+            } else if (answers.budget === 'standard') {
+                packages['reef-explorer'].matchScore += 25;
+                packages['family-fun'].matchScore += 15;
+            } else if (answers.budget === 'premium') {
+                packages['advanced-adventure'].matchScore += 30;
+                packages['3-day-explorer'].matchScore += 25;
+            } else if (answers.budget === 'luxury') {
+                packages['vip-private'].matchScore += 40;
+                packages['advanced-adventure'].matchScore += 20;
+            }
+
+            // Group matching
+            if (answers.group === 'solo') {
+                packages['reef-explorer'].matchScore += 10;
+                packages['advanced-adventure'].matchScore += 10;
+            } else if (answers.group === 'couple') {
+                packages['vip-private'].matchScore += 15;
+                packages['advanced-adventure'].matchScore += 10;
+            } else if (answers.group === 'family') {
+                packages['family-fun'].matchScore += 40;
+            } else if (answers.group === 'friends') {
+                packages['vip-private'].matchScore += 20;
+                packages['3-day-explorer'].matchScore += 15;
+            }
+        }
+
+        // Calculate and display results
+        function calculateResults() {
+            // Validate all answers
+            for (const key in answers) {
+                if (!answers[key]) {
+                    alert('Please answer all questions before getting recommendations.');
+                    return;
+                }
+            }
+
+            // Calculate match scores
+            calculateMatchScores();
+
+            // Sort packages by match score
+            const sortedPackages = Object.entries(packages)
+                .sort((a, b) => b[1].matchScore - a[1].matchScore);
+
+            // Get top package
+            const topPackage = sortedPackages[0][1];
+            const topPackageName = sortedPackages[0][0];
+
+            // Display results
+            document.getElementById('resultTitle').textContent = 'Perfect Match Found!';
+            document.getElementById('matchPercentage').textContent = `${Math.min(100, topPackage.matchScore)}% Match`;
+            document.getElementById('packageName').textContent = topPackage.name;
+            document.getElementById('packagePrice').textContent = topPackage.price;
+
+            // Display features
+            const featuresContainer = document.getElementById('packageFeatures');
+            featuresContainer.innerHTML = '';
+            topPackage.features.forEach(feature => {
+                featuresContainer.innerHTML += `
+                    <div class="feature-item">
+                        <i class="fas fa-check feature-icon"></i>
+                        <div>${feature}</div>
+                    </div>
+                `;
+            });
+
+            // Display alternative packages (next 3)
+            const alternativesContainer = document.getElementById('alternativePackages');
+            alternativesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 3 && i < sortedPackages.length; i++) {
+                const pkg = sortedPackages[i][1];
+                const pkgKey = sortedPackages[i][0];
+                
+                alternativesContainer.innerHTML += `
+                    <div class="alternative-card">
+                        <div style="color: #00b4d8; font-size: 24px; margin-bottom: 15px;">
+                            <i class="fas ${pkg.icon}"></i>
+                        </div>
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">${pkg.name}</h4>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">${pkg.description}</p>
+                        <div style="color: #023e8a; font-weight: 700; margin-bottom: 15px;">${pkg.price}</div>
+                        <a href="contact.html?package=${pkgKey}" class="btn btn-next" style="text-decoration: none; padding: 8px 15px; font-size: 0.9rem; width: 100%; text-align: center;">
+                            Book This Package
+                        </a>
+                    </div>
+                `;
+            }
+
+            // Show results section
+            document.getElementById('step5').classList.remove('active');
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Update progress bar to 100%
+            document.getElementById('progressFill').style.width = '100%';
+            
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Restart questionnaire
+        function restartQuestionnaire() {
+            // Reset answers
+            for (const key in answers) {
+                answers[key] = null;
+            }
+            
+            // Reset current step
+            currentStep = 1;
+            
+            // Reset UI
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.question-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('resultsSection').style.display = 'none';
+            
+            // Reset progress bar
+            updateProgress();
+            
+            // Scroll to top
+            document.querySelector('.questionnaire-container').scrollTop = 0;
+        }
+
+        // Initialize progress bar
+        updateProgress();
+    </script>
+</body>
+</html>
