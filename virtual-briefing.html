@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Dive Briefing | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== VIRTUAL BRIEFING SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #0077b6;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* ===== BRIEFING HERO ===== */
+        .briefing-hero {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 150px 0 80px;
+            margin-bottom: 40px;
+        }
+        
+        .briefing-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .briefing-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .language-selector {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            margin-top: 20px;
+        }
+        
+        /* ===== BRIEFING CONTAINER ===== */
+        .briefing-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        /* ===== VIDEO PLAYER ===== */
+        .video-container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        
+        .video-player {
+            position: relative;
+            background: #000;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-placeholder {
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+        
+        .video-icon {
+            font-size: 80px;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+        
+        .video-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #00b4d8;
+            color: #00b4d8;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: #00b4d8;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .video-progress {
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00b4d8;
+            width: 30%;
+        }
+        
+        .video-time {
+            color: #666;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        /* ===== BRIEFING CONTENT ===== */
+        .briefing-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .briefing-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f8ff;
+            padding-bottom: 10px;
+        }
+        
+        .tab-btn {
+            padding: 12px 25px;
+            background: #f0f8ff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #023e8a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover {
+            background: #e6f7ff;
+        }
+        
+        .tab-btn.active {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .briefing-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .briefing-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .briefing-section h3 {
+            color: #023e8a;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .briefing-icon {
+            color: #00b4d8;
+            font-size: 20px;
+        }
+        
+        .briefing-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .briefing-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .briefing-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .briefing-list i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .safety-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        
+        .warning-note {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        
+        .info-note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        
+        /* ===== SIDEBAR ===== */
+        .briefing-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .language-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .language-card h3 {
+            color: #023e8a;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .language-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .language-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-btn:hover {
+            border-color: #00b4d8;
+            color: #00b4d8;
+        }
+        
+        .language-btn.active {
+            background: #00b4d8;
+            color: white;
+            border-color: #00b4d8;
+        }
+        
+        .flag-icon {
+            font-size: 24px;
+        }
+        
+        .download-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .download-card h3 {
+            color: #023e8a;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .download-list {
+            list-style: none;
+        }
+        
+        .download-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .download-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .download-btn {
+            background: #00b4d8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover {
+            background: #0077b6;
+        }
+        
+        .quiz-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .quiz-card h3 {
+            color: #023e8a;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quiz-option:hover {
+            border-color: #00b4d8;
+            background: #f0f8ff;
+        }
+        
+        .quiz-option.selected {
+            background: #00b4d8;
+            color: white;
+            border-color: #00b4d8;
+        }
+        
+        .quiz-result {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #d4edda;
+            border-radius: 10px;
+            color: #155724;
+            margin-top: 20px;
+        }
+        
+        /* ===== DIVE SITE MAP ===== */
+        .dive-site-map {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 80px;
+        }
+        
+        .map-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .map-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f0f8ff;
+            transition: transform 0.3s;
+        }
+        
+        .map-item:hover {
+            transform: translateY(-5px);
+            background: #e6f7ff;
+        }
+        
+        .map-icon {
+            font-size: 50px;
+            color: #00b4d8;
+            margin-bottom: 15px;
+        }
+        
+        .map-coordinates {
+            font-family: monospace;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        /* ===== CTA SECTION ===== */
+        .cta {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-top: 50px;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: #023e8a;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .briefing-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .briefing-sidebar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .briefing-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .briefing-sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .briefing-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .video-player {
+                height: 400px;
+            }
+            
+            .briefing-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+            
+            .language-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .map-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .briefing-hero {
+                padding: 120px 0 60px;
+            }
+            
+            .video-player {
+                height: 300px;
+            }
+            
+            .video-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .video-progress {
+                order: 3;
+                flex-basis: 100%;
+                margin: 10px 0 0;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Briefing Hero -->
+    <section class="briefing-hero">
+        <div class="container">
+            <h1>Virtual Dive Briefing</h1>
+            <p>Watch safety instructions and dive briefings in your preferred language before arriving. Be prepared for your underwater adventure.</p>
+            <div class="language-selector">
+                <i class="fas fa-globe-americas"></i>
+                <span>Available in 5 languages: English, French, German, Italian, Swahili</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Briefing Container -->
+    <section class="briefing-container container">
+        <!-- Main Video and Content -->
+        <div>
+            <!-- Video Player -->
+            <div class="video-container">
+                <div class="video-player">
+                    <div class="video-placeholder">
+                        <div class="video-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <h3 style="color: white; margin-bottom: 10px;">Mbudya Island Dive Briefing</h3>
+                        <p style="opacity: 0.9;">Select a language and click play to start the briefing</p>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <div class="control-buttons">
+                        <button class="control-btn" id="playBtn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="control-btn" id="pauseBtn">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="control-btn" id="restartBtn">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                    <div class="video-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div class="video-time">
+                        <span id="currentTime">0:00</span> / <span id="totalTime">15:30</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="control-btn" id="volumeBtn">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="control-btn" id="fullscreenBtn">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Briefing Content -->
+            <div class="briefing-content">
+                <div class="briefing-tabs">
+                    <button class="tab-btn active" data-tab="safety">Safety</button>
+                    <button class="tab-btn" data-tab="equipment">Equipment</button>
+                    <button class="tab-btn" data-tab="site">Dive Site</button>
+                    <button class="tab-btn" data-tab="procedures">Procedures</button>
+                    <button class="tab-btn" data-tab="marine">Marine Life</button>
+                </div>
+                
+                <div class="tab-content active" id="safety-tab">
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-shield-alt briefing-icon"></i> Safety Rules</h3>
+                        <ul class="briefing-list">
+                            <li><i class="fas fa-check"></i> Never dive alone - always maintain buddy contact</li>
+                            <li><i class="fas fa-check"></i> Monitor your air supply - begin ascent with 50 bar remaining</li>
+                            <li><i class="fas fa-check"></i> Perform safety stop at 5 meters for 3 minutes</li>
+                            <li><i class="fas fa-check"></i> Maintain neutral buoyancy at all times</li>
+                            <li><i class="fas fa-check"></i> Equalize early and often during descent</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-exclamation-triangle briefing-icon"></i> Emergency Procedures</h3>
+                        <div class="warning-note">
+                            <strong>Out of Air:</strong> Signal to your buddy, ascend together using buddy's alternate air source
+                        </div>
+                        <div class="warning-note">
+                            <strong>Lost Buddy:</strong> Search for 1 minute, then surface and reunite on boat
+                        </div>
+                        <div class="info-note">
+                            <strong>Decompression Sickness:</strong> Report any symptoms immediately to dive master
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="equipment-tab">
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-tools briefing-icon"></i> Equipment Check</h3>
+                        <ul class="briefing-list">
+                            <li><i class="fas fa-check"></i> BCD inflator/deflator functions properly</li>
+                            <li><i class="fas fa-check"></i> Regulator delivers air smoothly</li>
+                            <li><i class="fas fa-check"></i> Alternate air source accessible</li>
+                            <li><i class="fas fa-check"></i> Weight system releases easily</li>
+                            <li><i class="fas fa-check"></i> Mask strap adjusted and sealed</li>
+                            <li><i class="fas fa-check"></i> Fins fit properly and comfortably</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-wrench briefing-icon"></i> Equipment Setup</h3>
+                        <p style="color: #666; line-height: 1.8; margin-bottom: 15px;">Our dive masters will help you set up your equipment. If you're using our rental gear, it will be prepared for you with:</p>
+                        <ul class="briefing-list">
+                            <li><i class="fas fa-check"></i> Tank filled to 200 bar</li>
+                            <li><i class="fas fa-check"></i> Regulator assembled and tested</li>
+                            <li><i class="fas fa-check"></i> BCD adjusted to your size</li>
+                            <li><i class="fas fa-check"></i> Weight calculated for your buoyancy</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="site-tab">
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-map-marker-alt briefing-icon"></i> Mbudya Island Site</h3>
+                        <p style="color: #666; line-height: 1.8; margin-bottom: 15px;">Mbudya Island features beautiful coral gardens starting at 3 meters and descending to 15 meters. The site is protected from strong currents, making it ideal for beginner and intermediate divers.</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px;">
+                            <div>
+                                <h4 style="color: #023e8a; margin-bottom: 10px;">Site Details</h4>
+                                <ul class="briefing-list" style="border: none;">
+                                    <li><i class="fas fa-water"></i> Depth: 3-15m</li>
+                                    <li><i class="fas fa-eye"></i> Visibility: 20-30m</li>
+                                    <li><i class="fas fa-thermometer-half"></i> Temp: 26-29°C</li>
+                                    <li><i class="fas fa-clock"></i> Dive Time: 45 min</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: #023e8a; margin-bottom: 10px;">Conditions</h4>
+                                <ul class="briefing-list" style="border: none;">
+                                    <li><i class="fas fa-wind"></i> Current: Light to none</li>
+                                    <li><i class="fas fa-sun"></i> Light: Excellent</li>
+                                    <li><i class="fas fa-swimmer"></i> Entry: Boat, back roll</li>
+                                    <li><i class="fas fa-anchor"></i> Bottom: Sandy with coral</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="procedures-tab">
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-list-ol briefing-icon"></i> Dive Procedures</h3>
+                        <div style="background: #f0f8ff; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                            <h4 style="color: #023e8a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-arrow-down"></i> Descent Procedure
+                            </h4>
+                            <ol style="padding-left: 20px; color: #666; line-height: 1.8;">
+                                <li>Giant stride entry from boat</li>
+                                <li>Signal OK to dive master</li>
+                                <li>Equalize every meter</li>
+                                <li>Follow anchor line to bottom</li>
+                                <li>Regroup at 5 meters</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="background: #f0f8ff; padding: 25px; border-radius: 10px; margin-bottom: 25px;">
+                            <h4 style="color: #023e8a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-arrow-up"></i> Ascent Procedure
+                            </h4>
+                            <ol style="padding-left: 20px; color: #666; line-height: 1.8;">
+                                <li>Begin ascent with 50 bar remaining</li>
+                                <li>Ascend slowly (9m per minute)</li>
+                                <li>Safety stop at 5m for 3 minutes</li>
+                                <li>Surface near boat ladder</li>
+                                <li>Signal OK upon surfacing</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="marine-tab">
+                    <div class="briefing-section">
+                        <h3><i class="fas fa-fish briefing-icon"></i> Marine Life</h3>
+                        <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Mbudya Island is home to diverse marine life including colorful reef fish, invertebrates, and occasional larger species.</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div>
+                                <h4 style="color: #023e8a; margin-bottom: 10px;">Common Sightings</h4>
+                                <ul class="briefing-list" style="border: none;">
+                                    <li><i class="fas fa-fish"></i> Butterflyfish</li>
+                                    <li><i class="fas fa-fish"></i> Angelfish</li>
+                                    <li><i class="fas fa-fish"></i> Clownfish</li>
+                                    <li><i class="fas fa-fish"></i> Parrotfish</li>
+                                    <li><i class="fas fa-star"></i> Starfish</li>
+                                    <li><i class="fas fa-feather-alt"></i> Moray eels</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: #023e8a; margin-bottom: 10px;">Seasonal Sightings</h4>
+                                <ul class="briefing-list" style="border: none;">
+                                    <li><i class="fas fa-turtle"></i> Green turtles</li>
+                                    <li><i class="fas fa-feather"></i> Eagle rays</li>
+                                    <li><i class="fas fa-shark"></i> Reef sharks</li>
+                                    <li><i class="fas fa-octopus"></i> Octopus</li>
+                                    <li><i class="fas fa-crab"></i> Lobsters</li>
+                                    <li><i class="fas fa-fish"></i> Barracuda schools</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="safety-note" style="margin-top: 20px;">
+                        <strong>Do Not Touch:</strong> Look but don't touch marine life. Coral is fragile and some creatures can be dangerous.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="briefing-sidebar">
+            <!-- Language Selection -->
+            <div class="language-card">
+                <h3>Select Language</h3>
+                <div class="language-buttons">
+                    <button class="language-btn active" data-lang="en">
+                        <span class="flag-icon">🇬🇧</span>
+                        <span>English</span>
+                    </button>
+                    <button class="language-btn" data-lang="fr">
+                        <span class="flag-icon">🇫🇷</span>
+                        <span>Français</span>
+                    </button>
+                    <button class="language-btn" data-lang="de">
+                        <span class="flag-icon">🇩🇪</span>
+                        <span>Deutsch</span>
+                    </button>
+                    <button class="language-btn" data-lang="it">
+                        <span class="flag-icon">🇮🇹</span>
+                        <span>Italiano</span>
+                    </button>
+                    <button class="language-btn" data-lang="sw">
+                        <span class="flag-icon">🇹🇿</span>
+                        <span>Kiswahili</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Download Materials -->
+            <div class="download-card">
+                <h3>Download Materials</h3>
+                <ul class="download-list">
+                    <li>
+                        <span>Safety Guidelines PDF</span>
+                        <button class="download-btn" data-file="safety">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </li>
+                    <li>
+                        <span>Dive Site Map</span>
+                        <button class="download-btn" data-file="map">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </li>
+                    <li>
+                        <span>Marine Life Guide</span>
+                        <button class="download-btn" data-file="marine">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </li>
+                    <li>
+                        <span>Equipment Checklist</span>
+                        <button class="download-btn" data-file="checklist">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Safety Quiz -->
+            <div class="quiz-card">
+                <h3>Safety Knowledge Quiz</h3>
+                <div class="quiz-question">
+                    <p style="color: #666; margin-bottom: 15px;">When should you begin your ascent?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="true">When you have 50 bar remaining</div>
+                        <div class="quiz-option">When you have 100 bar remaining</div>
+                        <div class="quiz-option">When your dive computer tells you</div>
+                        <div class="quiz-option">When you see the first diver ascend</div>
+                    </div>
+                </div>
+                <button class="download-btn" id="submitQuiz" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-check-circle"></i> Check Answer
+                </button>
+                <div class="quiz-result" id="quizResult">
+                    <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p style="margin: 0;">Correct! Always begin ascent with 50 bar remaining.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dive Site Map -->
+    <section class="dive-site-map container">
+        <h2 style="color: #023e8a; text-align: center; margin-bottom: 20px; font-size: 2.5rem;">Featured Dive Sites</h2>
+        <p style="color: #666; text-align: center; max-width: 600px; margin: 0 auto 30px;">Watch briefings for different dive sites around Dar es Salaam</p>
+        
+        <div class="map-container">
+            <div class="map-item" data-site="mbudya">
+                <div class="map-icon">
+                    <i class="fas fa-island"></i>
+                </div>
+                <h3 style="color: #023e8a; margin-bottom: 10px;">Mbudya Island</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 10px;">Shallow coral gardens perfect for beginners</p>
+                <div class="map-coordinates">6°39'S 39°14'E</div>
+                <button class="download-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                    <i class="fas fa-play"></i> Watch Briefing
+                </button>
+            </div>
+            
+            <div class="map-item" data-site="bongoyo">
+                <div class="map-icon">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h3 style="color: #023e8a; margin-bottom: 10px;">Bongoyo Island</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 10px;">Wall dive with pelagic sightings</p>
+                <div class="map-coordinates">6°42'S 39°17'E</div>
+                <button class="download-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                    <i class="fas fa-play"></i> Watch Briefing
+                </button>
+            </div>
+            
+            <div class="map-item" data-site="wreck">
+                <div class="map-icon">
+                    <i class="fas fa-ship"></i>
+                </div>
+                <h3 style="color: #023e8a; margin-bottom: 10px;">Mafia Wreck</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 10px;">WWII shipwreck with rich marine life</p>
+                <div class="map-coordinates">6°48'S 39°22'E</div>
+                <button class="download-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                    <i class="fas fa-play"></i> Watch Briefing
+                </button>
+            </div>
+            
+            <div class="map-item" data-site="night">
+                <div class="map-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <h3 style="color: #023e8a; margin-bottom: 10px;">Night Dive Site</h3>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 10px;">Nocturnal marine life experience</p>
+                <div class="map-coordinates">6°41'S 39°19'E</div>
+                <button class="download-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                    <i class="fas fa-play"></i> Watch Briefing
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready for Your Dive?</h2>
+            <p>Now that you've watched the briefing, book your dive to experience Mbudya Island in person</p>
+            
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn btn-primary">Book Your Dive</a>
+                <a href="dives.html" class="btn btn-secondary">
+                    <i class="fas fa-map-marked-alt"></i> Explore More Sites
+                </a>
+                <a href="tel:+255769474643" class="btn btn-secondary">
+                    <i class="fas fa-phone-alt"></i> Call with Questions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Language selection
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.language-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const lang = this.getAttribute('data-lang');
+                const messages = {
+                    en: "Now playing in English",
+                    fr: "Maintenant en Français",
+                    de: "Jetzt auf Deutsch",
+                    it: "Ora in Italiano",
+                    sw: "Sasa kwa Kiswahili"
+                };
+                
+                // Update video placeholder
+                const videoPlaceholder = document.querySelector('.video-placeholder p');
+                videoPlaceholder.textContent = messages[lang];
+                
+                // Update briefing content based on language
+                updateBriefingLanguage(lang);
+            });
+        });
+
+        // Update briefing content based on language
+        function updateBriefingLanguage(lang) {
+            // In a real implementation, this would fetch translated content
+            // For this demo, we'll just show a message
+            console.log(`Language changed to: ${lang}`);
+            
+            // Update video time based on language (simulated)
+            const totalTimes = {
+                en: "15:30",
+                fr: "16:10",
+                de: "15:45",
+                it: "16:20",
+                sw: "17:00"
+            };
+            
+            document.getElementById('totalTime').textContent = totalTimes[lang] || "15:30";
+        }
+
+        // Video controls simulation
+        let isPlaying = false;
+        let currentTime = 0;
+        let totalTime = 930; // 15:30 in seconds
+        let progressInterval;
+        
+        document.getElementById('playBtn').addEventListener('click', function() {
+            if (!isPlaying) {
+                isPlaying = true;
+                this.innerHTML = '<i class="fas fa-pause"></i>';
+                
+                progressInterval = setInterval(() => {
+                    if (currentTime < totalTime) {
+                        currentTime += 1;
+                        updateProgress();
+                    } else {
+                        pauseVideo();
+                    }
+                }, 1000);
+            }
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', pauseVideo);
+        
+        document.getElementById('restartBtn').addEventListener('click', function() {
+            currentTime = 0;
+            updateProgress();
+            if (!isPlaying) {
+                document.getElementById('playBtn').click();
+            }
+        });
+        
+        function pauseVideo() {
+            isPlaying = false;
+            clearInterval(progressInterval);
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i>';
+        }
+        
+        function updateProgress() {
+            const percent = (currentTime / totalTime) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            
+            // Update time display
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            document.getElementById('currentTime').textContent = 
+                `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        
+        // Volume toggle
+        let isMuted = false;
+        document.getElementById('volumeBtn').addEventListener('click', function() {
+            isMuted = !isMuted;
+            this.innerHTML = isMuted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
+        });
+        
+        // Fullscreen toggle
+        document.getElementById('fullscreenBtn').addEventListener('click', function() {
+            const videoPlayer = document.querySelector('.video-player');
+            
+            if (!document.fullscreenElement) {
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
+                }
+                this.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                this.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+        
+        // Download buttons
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            if (!btn.id) { // Exclude quiz submit button
+                btn.addEventListener('click', function() {
+                    const file = this.getAttribute('data-file');
+                    const fileName = `${file}_guide.pdf`;
+                    
+                    // Simulate download
+                    alert(`Downloading ${fileName}... In a real implementation, this would download the file.`);
+                    
+                    // Visual feedback
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+                    this.style.background = '#28a745';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.background = '';
+                    }, 2000);
+                });
+            }
+        });
+        
+        // Safety quiz
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+        
+        document.getElementById('submitQuiz').addEventListener('click', function() {
+            const selectedOption = document.querySelector('.quiz-option.selected');
+            const resultDiv = document.getElementById('quizResult');
+            
+            if (!selectedOption) {
+                alert('Please select an answer first!');
+                return;
+            }
+            
+            const isCorrect = selectedOption.getAttribute('data-correct') === 'true';
+            
+            if (isCorrect) {
+                resultDiv.style.background = '#d4edda';
+                resultDiv.style.color = '#155724';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p style="margin: 0;">Correct! Always begin ascent with 50 bar remaining.</p>
+                `;
+            } else {
+                resultDiv.style.background = '#f8d7da';
+                resultDiv.style.color = '#721c24';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-times-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
+                    <p style="margin: 0;">Incorrect. The correct answer is: Begin ascent with 50 bar remaining.</p>
+                `;
+            }
+            
+            resultDiv.style.display = 'block';
+        });
+        
+        // Dive site briefing buttons
+        document.querySelectorAll('.map-item .download-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const site = this.closest('.map-item').getAttribute('data-site');
+                const siteNames = {
+                    mbudya: "Mbudya Island",
+                    bongoyo: "Bongoyo Island",
+                    wreck: "Mafia Wreck",
+                    night: "Night Dive Site"
+                };
+                
+                // Update video placeholder
+                const videoPlaceholder = document.querySelector('.video-placeholder');
+                videoPlaceholder.innerHTML = `
+                    <div class="video-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <h3 style="color: white; margin-bottom: 10px;">${siteNames[site]} Briefing</h3>
+                    <p style="opacity: 0.9;">Select a language and click play to start the briefing</p>
+                `;
+                
+                // Reset video
+                pauseVideo();
+                currentTime = 0;
+                updateProgress();
+                
+                // Scroll to video
+                document.querySelector('.video-container').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                
+                // Update briefing tabs content based on site
+                updateBriefingForSite(site);
+            });
+        });
+        
+        // Update briefing content based on site
+        function updateBriefingForSite(site) {
+            // In a real implementation, this would load different briefing content
+            console.log(`Loading briefing for site: ${site}`);
+            
+            // Update tab titles
+            const siteTitles = {
+                mbudya: "Mbudya Island",
+                bongoyo: "Bongoyo Island",
+                wreck: "Mafia Wreck",
+                night: "Night Dive"
+            };
+            
+            // Show a message in the first tab
+            const safetyTab = document.querySelector('#safety-tab .briefing-section:first-child p');
+            if (safetyTab) {
+                safetyTab.textContent = `This is the safety briefing for ${siteTitles[site]}. The specific procedures may vary based on site conditions.`;
+            }
+        }
+        
+        // Initialize
+        updateProgress();
+        
+        // Add some interactivity to briefing list items
+        document.querySelectorAll('.briefing-list li').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'translateX(5px)';
+                setTimeout(() => {
+                    this.style.transform = 'translateX(0)';
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
