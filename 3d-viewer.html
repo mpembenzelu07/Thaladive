@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Dive Experience Viewer | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== 3D VIEWER PAGE SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #0a192f;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+            transform: translateY(-2px);
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        /* ===== 3D VIEWER HERO ===== */
+        .viewer-hero {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background: radial-gradient(circle at center, #0a2a4a 0%, #0a192f 100%);
+        }
+        
+        .viewer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .viewer-badge {
+            background: rgba(0, 180, 216, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+        }
+        
+        .viewer-badge i {
+            color: #00b4d8;
+            font-size: 20px;
+        }
+        
+        .viewer-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00b4d8, #90e0ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+        }
+        
+        .viewer-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        .viewer-instructions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .instruction-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+        }
+        
+        .instruction-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 180, 216, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #00b4d8;
+        }
+        
+        /* ===== 3D VIEWER CONTAINER ===== */
+        .viewer-container {
+            padding: 80px 0;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .viewer-wrapper {
+            position: relative;
+            height: 600px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            background: #0a192f;
+            border: 2px solid rgba(0, 180, 216, 0.3);
+        }
+        
+        .viewer-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scene-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a2a4a 0%, #0a192f 100%);
+        }
+        
+        .scene-object {
+            position: absolute;
+            transition: transform 0.5s ease;
+        }
+        
+        .viewer-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 180, 216, 0.2);
+            border: 2px solid rgba(0, 180, 216, 0.5);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 180, 216, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.5);
+        }
+        
+        /* ===== SCENE SELECTION ===== */
+        .scene-selection {
+            margin-top: 50px;
+        }
+        
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .scene-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .scene-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 180, 216, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.2);
+        }
+        
+        .scene-card.active {
+            border-color: #00b4d8;
+            background: rgba(0, 180, 216, 0.1);
+        }
+        
+        .scene-preview {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .scene-info {
+            padding: 20px;
+            color: white;
+        }
+        
+        .scene-info h3 {
+            color: #00b4d8;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .scene-tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .scene-tag {
+            background: rgba(0, 180, 216, 0.2);
+            color: #90e0ef;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== DEVICE DETECTION ===== */
+        .device-alert {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 180, 216, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 180, 216, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            z-index: 1001;
+            display: none;
+            max-width: 400px;
+            animation: slideDown 0.5s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .gyro-icon {
+            font-size: 40px;
+            color: #00b4d8;
+            margin-bottom: 15px;
+            animation: spin 4s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: rgba(10, 25, 47, 0.95);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 100px;
+            border-top: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 25, 47, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .viewer-hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .viewer-wrapper {
+                height: 500px;
+            }
+            
+            .instructions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .viewer-hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .viewer-wrapper {
+                height: 400px;
+            }
+            
+            .scene-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .viewer-controls {
+                bottom: 20px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .viewer-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .viewer-hero {
+                padding-top: 100px;
+            }
+            
+            .viewer-wrapper {
+                height: 300px;
+            }
+            
+            .viewer-badge {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* ===== GYROSCOPE ANIMATION ===== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(20px) rotate(-5deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3D Viewer Hero -->
+    <section class="viewer-hero">
+        <div class="container viewer-content">
+            <div class="viewer-badge">
+                <i class="fas fa-vr-cardboard"></i>
+                <span>3D IMMERSIVE EXPERIENCE</span>
+            </div>
+            
+            <h1>Explore Underwater in 3D</h1>
+            <p>Experience Dar es Salaam's dive sites like never before. Rotate, zoom, and explore coral reefs, wrecks, and marine life in stunning 3D. Tilt your mobile device or use touch controls to navigate.</p>
+            
+            <div class="viewer-instructions">
+                <h3 style="color: #00b4d8; margin-bottom: 20px;">How to Use the 3D Viewer</h3>
+                <div class="instructions-grid">
+                    <div class="instruction-item">
+                        <div class="instruction-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: white; margin-bottom: 5px;">Mobile Users</h4>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Tilt your phone to look around. Swipe to rotate the scene.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-item">
+                        <div class="instruction-icon">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: white; margin-bottom: 5px;">Desktop Users</h4>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Click and drag to rotate. Scroll to zoom in/out.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-item">
+                        <div class="instruction-icon">
+                            <i class="fas fa-expand-alt"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: white; margin-bottom: 5px;">Full Screen</h4>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Click the expand button for immersive experience.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-item">
+                        <div class="instruction-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <div>
+                            <h4 style="color: white; margin-bottom: 5px;">Switch Scenes</h4>
+                            <p style="opacity: 0.8; font-size: 0.9rem;">Select different dive sites from the scene gallery.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div style="position: absolute; top: 20%; left: 10%; width: 100px; height: 100px; animation: float 6s ease-in-out infinite;">
+            <i class="fas fa-fish" style="font-size: 60px; color: rgba(0, 180, 216, 0.3);"></i>
+        </div>
+        
+        <div style="position: absolute; top: 60%; right: 15%; width: 80px; height: 80px; animation: sway 8s ease-in-out infinite;">
+            <i class="fas fa-coral" style="font-size: 50px; color: rgba(255, 107, 53, 0.3);"></i>
+        </div>
+        
+        <div style="position: absolute; bottom: 30%; left: 20%; width: 120px; height: 120px; animation: float 7s ease-in-out infinite;">
+            <i class="fas fa-water" style="font-size: 70px; color: rgba(144, 224, 239, 0.2);"></i>
+        </div>
+    </section>
+
+    <!-- Device Alert -->
+    <div class="device-alert" id="deviceAlert">
+        <div class="gyro-icon">
+            <i class="fas fa-compass"></i>
+        </div>
+        <h3 style="color: #00b4d8; margin-bottom: 10px;">Gyroscope Detected!</h3>
+        <p style="opacity: 0.9;">Tilt your device to explore the 3D scene. For best experience, hold your phone horizontally.</p>
+    </div>
+
+    <!-- 3D Viewer Container -->
+    <section class="viewer-container">
+        <div class="container">
+            <div class="viewer-wrapper" id="viewerWrapper">
+                <div class="viewer-canvas" id="viewerCanvas">
+                    <!-- 3D Scene will be rendered here -->
+                    <div class="scene-background"></div>
+                    
+                    <!-- Scene objects -->
+                    <div class="scene-object" id="coralReef" style="top: 30%; left: 40%; width: 200px; height: 200px;">
+                        <div style="color: #ff6b35; font-size: 60px; text-align: center; animation: float 4s ease-in-out infinite;">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star" style="position: relative; left: 20px; top: -10px; font-size: 40px; animation-delay: 0.5s;"></i>
+                            <i class="fas fa-star" style="position: relative; left: -20px; top: 20px; font-size: 50px; animation-delay: 1s;"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="scene-object" id="wreck" style="top: 50%; left: 20%; width: 150px; height: 150px;">
+                        <div style="color: #8B4513; font-size: 80px; text-align: center; animation: sway 5s ease-in-out infinite;">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="scene-object" id="fishSchool" style="top: 20%; left: 70%; width: 100px; height: 100px;">
+                        <div style="color: #00b4d8; font-size: 40px; text-align: center; animation: float 3s ease-in-out infinite;">
+                            <i class="fas fa-fish"></i>
+                            <i class="fas fa-fish" style="position: relative; left: 15px; animation-delay: 0.3s;"></i>
+                            <i class="fas fa-fish" style="position: relative; left: -15px; animation-delay: 0.6s;"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="scene-object" id="diver" style="top: 60%; left: 60%; width: 80px; height: 80px;">
+                        <div style="color: white; font-size: 50px; text-align: center; animation: float 6s ease-in-out infinite;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="scene-object" id="seaTurtle" style="top: 40%; left: 80%; width: 120px; height: 120px;">
+                        <div style="color: #32CD32; font-size: 70px; text-align: center; animation: sway 8s ease-in-out infinite;">
+                            <i class="fas fa-turtle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="scene-object" id="bubbles" style="top: 10%; left: 50%; width: 100px; height: 100px;">
+                        <div style="color: rgba(255, 255, 255, 0.5); font-size: 30px; text-align: center; animation: float 2s ease-in-out infinite;">
+                            <i class="fas fa-circle" style="position: relative; left: 0; animation: pulse 1.5s infinite;"></i>
+                            <i class="fas fa-circle" style="position: relative; left: 20px; top: -10px; font-size: 20px; animation: pulse 1.8s infinite;"></i>
+                            <i class="fas fa-circle" style="position: relative; left: -20px; top: 10px; font-size: 25px; animation: pulse 2.2s infinite;"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Viewer Controls -->
+                <div class="viewer-controls">
+                    <button class="control-btn" id="rotateLeft">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="control-btn" id="resetView">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                    <button class="control-btn" id="rotateRight">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="control-btn" id="zoomIn">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="control-btn" id="zoomOut">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="control-btn" id="toggleFullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Scene Information -->
+            <div id="sceneInfo" style="margin-top: 30px; color: white; text-align: center;">
+                <h3 id="sceneTitle" style="color: #00b4d8; margin-bottom: 10px;">Coral Reef Garden</h3>
+                <p id="sceneDescription" style="opacity: 0.9;">Vibrant coral formations with tropical fish. Depth: 5-15m. Perfect for beginner divers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scene Selection -->
+    <section class="scene-selection">
+        <div class="container">
+            <h2 style="color: #00b4d8; text-align: center; margin-bottom: 20px; font-size: 2.5rem;">Explore Different Dive Sites</h2>
+            <p style="color: white; text-align: center; max-width: 600px; margin: 0 auto 40px; opacity: 0.9;">Click on any scene to explore it in 3D. Each site offers unique underwater landscapes and marine life.</p>
+            
+            <div class="scene-grid">
+                <div class="scene-card active" data-scene="coral" data-title="Coral Reef Garden" data-description="Vibrant coral formations with tropical fish. Depth: 5-15m. Perfect for beginner divers.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1548169873-23b2c4c5c00d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Coral Reef Garden</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">Shallow reef with colorful corals and abundant marine life. Ideal for snorkeling and beginner dives.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Beginner</span>
+                            <span class="scene-tag">5-15m</span>
+                            <span class="scene-tag">Colorful</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scene-card" data-scene="wreck" data-title="Mafia Shipwreck" data-description="Sunken cargo ship from WWII. Depth: 18-28m. Advanced divers only.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Mafia Shipwreck</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">WWII cargo ship fully intact, covered in soft corals. Home to large groupers and schooling fish.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Advanced</span>
+                            <span class="scene-tag">18-28m</span>
+                            <span class="scene-tag">Wreck Dive</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scene-card" data-scene="wall" data-title="Deep Blue Wall" data-description="Dramatic wall dropping to 40m. Pelagic sightings common.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Deep Blue Wall</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">Spectacular wall dive with dramatic drop-offs. Frequent sightings of sharks, turtles, and rays.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Intermediate+</span>
+                            <span class="scene-tag">12-40m</span>
+                            <span class="scene-tag">Pelagic Life</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scene-card" data-scene="canyon" data-title="Coral Canyon" data-description="Swim-throughs and overhangs. Excellent for photography.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Coral Canyon</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">Underwater canyon with swim-throughs, overhangs, and tunnels. Covered in colorful soft corals.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Intermediate</span>
+                            <span class="scene-tag">8-22m</span>
+                            <span class="scene-tag">Swim-throughs</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scene-card" data-scene="night" data-title="Night Dive Reef" data-description="Nocturnal marine life experience with bioluminescence.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Night Dive Reef</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">Experience the reef after dark. See octopus hunting, sleeping fish, and bioluminescent plankton.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Night Dive</span>
+                            <span class="scene-tag">5-15m</span>
+                            <span class="scene-tag">Bioluminescence</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scene-card" data-scene="equipment" data-title="Diving Equipment" data-description="Explore 3D models of professional diving gear.">
+                    <div class="scene-preview" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="scene-info">
+                        <h3>Diving Equipment</h3>
+                        <p style="opacity: 0.8; font-size: 0.95rem;">Explore our professional diving equipment in 3D. See regulators, BCDs, tanks, and accessories.</p>
+                        <div class="scene-tags">
+                            <span class="scene-tag">Equipment</span>
+                            <span class="scene-tag">Interactive</span>
+                            <span class="scene-tag">Educational</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="background: rgba(0, 180, 216, 0.1); padding: 80px 0; margin-top: 80px; border-top: 1px solid rgba(0, 180, 216, 0.3);">
+        <div class="container">
+            <div style="text-align: center; color: white;">
+                <h2 style="color: #00b4d8; font-size: 2.5rem; margin-bottom: 20px;">Ready to Experience It Live?</h2>
+                <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px; opacity: 0.9;">Book a real dive to experience these amazing underwater sites in person with our expert guides.</p>
+                
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="contact.html" class="btn-book" style="font-size: 1.1rem; padding: 15px 35px;">
+                        <i class="fas fa-calendar-check"></i> Book Your Dive
+                    </a>
+                    <a href="dives.html" style="background: transparent; color: white; border: 2px solid #00b4d8; padding: 15px 35px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
+                        <i class="fas fa-map-marked-alt"></i> Explore Dive Trips
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // 3D Viewer Functionality
+        let currentRotation = 0;
+        let currentZoom = 1;
+        let currentScene = 'coral';
+        let isFullscreen = false;
+        
+        // Scene objects
+        const sceneObjects = {
+            coral: document.getElementById('coralReef'),
+            wreck: document.getElementById('wreck'),
+            fishSchool: document.getElementById('fishSchool'),
+            diver: document.getElementById('diver'),
+            seaTurtle: document.getElementById('seaTurtle'),
+            bubbles: document.getElementById('bubbles')
+        };
+        
+        // Initialize scene
+        function initScene() {
+            // Set initial positions and visibility
+            Object.keys(sceneObjects).forEach(key => {
+                const obj = sceneObjects[key];
+                if (obj) {
+                    obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                    obj.style.display = key === currentScene ? 'block' : 'none';
+                }
+            });
+            
+            // Update scene info
+            updateSceneInfo();
+        }
+        
+        // Update scene information
+        function updateSceneInfo() {
+            const activeCard = document.querySelector('.scene-card.active');
+            if (activeCard) {
+                const title = activeCard.getAttribute('data-title');
+                const description = activeCard.getAttribute('data-description');
+                
+                document.getElementById('sceneTitle').textContent = title;
+                document.getElementById('sceneDescription').textContent = description;
+            }
+        }
+        
+        // Rotate scene
+        function rotateScene(degrees) {
+            currentRotation += degrees;
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                }
+            });
+        }
+        
+        // Zoom scene
+        function zoomScene(factor) {
+            currentZoom *= factor;
+            currentZoom = Math.max(0.5, Math.min(3, currentZoom));
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                }
+            });
+        }
+        
+        // Reset view
+        function resetView() {
+            currentRotation = 0;
+            currentZoom = 1;
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.transform = `rotateY(0deg) scale(1)`;
+                }
+            });
+        }
+        
+        // Change scene
+        function changeScene(sceneId) {
+            currentScene = sceneId;
+            
+            // Hide all objects
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.display = 'none';
+                }
+            });
+            
+            // Show current scene object
+            if (sceneObjects[sceneId]) {
+                sceneObjects[sceneId].style.display = 'block';
+                sceneObjects[sceneId].style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+            }
+            
+            // Update active card
+            document.querySelectorAll('.scene-card').forEach(card => {
+                card.classList.remove('active');
+                if (card.getAttribute('data-scene') === sceneId) {
+                    card.classList.add('active');
+                }
+            });
+            
+            // Update scene info
+            updateSceneInfo();
+        }
+        
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            const viewerWrapper = document.getElementById('viewerWrapper');
+            
+            if (!isFullscreen) {
+                if (viewerWrapper.requestFullscreen) {
+                    viewerWrapper.requestFullscreen();
+                } else if (viewerWrapper.webkitRequestFullscreen) {
+                    viewerWrapper.webkitRequestFullscreen();
+                } else if (viewerWrapper.msRequestFullscreen) {
+                    viewerWrapper.msRequestFullscreen();
+                }
+                isFullscreen = true;
+                document.getElementById('toggleFullscreen').innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                isFullscreen = false;
+                document.getElementById('toggleFullscreen').innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        }
+        
+        // Event Listeners
+        document.getElementById('rotateLeft').addEventListener('click', () => rotateScene(-30));
+        document.getElementById('rotateRight').addEventListener('click', () => rotateScene(30));
+        document.getElementById('resetView').addEventListener('click', resetView);
+        document.getElementById('zoomIn').addEventListener('click', () => zoomScene(1.2));
+        document.getElementById('zoomOut').addEventListener('click', () => zoomScene(0.8));
+        document.getElementById('toggleFullscreen').addEventListener('click', toggleFullscreen);
+        
+        // Scene selection
+        document.querySelectorAll('.scene-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const sceneId = this.getAttribute('data-scene');
+                changeScene(sceneId);
+            });
+        });
+        
+        // Touch and mouse controls
+        const viewerCanvas = document.getElementById('viewerCanvas');
+        let isDragging = false;
+        let startX, startY;
+        let startRotation = 0;
+        
+        viewerCanvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startRotation = currentRotation;
+        });
+        
+        viewerCanvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            currentRotation = startRotation + deltaX * 0.5;
+            
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                }
+            });
+        });
+        
+        viewerCanvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        viewerCanvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+        
+        // Touch events for mobile
+        viewerCanvas.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startRotation = currentRotation;
+        });
+        
+        viewerCanvas.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const deltaX = e.touches[0].clientX - startX;
+            currentRotation = startRotation + deltaX * 0.5;
+            
+            Object.values(sceneObjects).forEach(obj => {
+                if (obj) {
+                    obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                }
+            });
+        });
+        
+        viewerCanvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+        
+        // Zoom with mouse wheel
+        viewerCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            zoomScene(zoomFactor);
+        });
+        
+        // Gyroscope detection for mobile
+        function checkGyroscope() {
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', handleOrientation);
+                setTimeout(() => {
+                    document.getElementById('deviceAlert').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('deviceAlert').style.display = 'none';
+                    }, 5000);
+                }, 2000);
+            }
+        }
+        
+        function handleOrientation(event) {
+            // Only use if in portrait mode and scene is active
+            if (window.innerHeight > window.innerWidth) {
+                const gamma = event.gamma; // Left/right tilt
+                if (gamma && Math.abs(gamma) > 5) {
+                    currentRotation = gamma * 2;
+                    
+                    Object.values(sceneObjects).forEach(obj => {
+                        if (obj) {
+                            obj.style.transform = `rotateY(${currentRotation}deg) scale(${currentZoom})`;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Initialize
+        initScene();
+        
+        // Check for gyroscope on mobile devices
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            checkGyroscope();
+        }
+        
+        // Fullscreen change event
+        document.addEventListener('fullscreenchange', () => {
+            isFullscreen = !!document.fullscreenElement;
+            document.getElementById('toggleFullscreen').innerHTML = isFullscreen ? 
+                '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
+        });
+        
+        // Add some interactive fish on click
+        viewerCanvas.addEventListener('click', (e) => {
+            const rect = viewerCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Create a temporary fish at click location
+            const fish = document.createElement('div');
+            fish.innerHTML = '<i class="fas fa-fish" style="color: #00b4d8; font-size: 30px;"></i>';
+            fish.style.position = 'absolute';
+            fish.style.left = `${x}px`;
+            fish.style.top = `${y}px`;
+            fish.style.transform = `rotateY(${currentRotation}deg)`;
+            fish.style.animation = 'float 3s ease-in-out forwards';
+            fish.style.zIndex = '5';
+            
+            viewerCanvas.appendChild(fish);
+            
+            // Remove fish after animation
+            setTimeout(() => {
+                fish.remove();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
