@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dive Trips & Interactive Map | Thalassa Dive Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== DIVES PAGE SPECIFIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #00b4d8;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .logo-main {
+            font-size: 24px;
+            line-height: 1;
+        }
+        
+        .logo-sub {
+            font-size: 12px;
+            color: #0077b6;
+            letter-spacing: 1px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #00b4d8;
+            border-bottom: 2px solid #00b4d8;
+        }
+        
+        .btn-book {
+            background: #00b4d8;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn-book:hover {
+            background: #0077b6;
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* ===== DIVES HERO ===== */
+        .dives-hero {
+            background: linear-gradient(rgba(2, 62, 138, 0.8), rgba(0, 119, 182, 0.8)), 
+                        url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding-top: 120px;
+            margin-bottom: 80px;
+        }
+        
+        .dives-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .dives-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        /* ===== INTERACTIVE MAP ===== */
+        .map-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 80px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .map-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        
+        .map-visual {
+            flex: 1;
+            background: linear-gradient(135deg, #e6f7ff, #cceeff);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-dots {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #00b4d8;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .map-dot:hover {
+            transform: scale(1.5);
+            background: #ff6b35;
+        }
+        
+        .map-dot.active {
+            background: #ff6b35;
+            transform: scale(1.3);
+        }
+        
+        .map-details {
+            flex: 1;
+        }
+        
+        .site-info {
+            display: none;
+        }
+        
+        .site-info.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .site-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .site-icon {
+            font-size: 40px;
+            color: #00b4d8;
+        }
+        
+        .site-difficulty {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .site-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .stat-box {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .marine-life {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .marine-item {
+            background: #e6f7ff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* ===== DIVE TRIPS ===== */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: #023e8a;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .trips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .trip-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .trip-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .trip-header {
+            padding: 25px;
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            position: relative;
+        }
+        
+        .trip-type {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .trip-header h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .trip-location {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .trip-content {
+            padding: 25px;
+        }
+        
+        .trip-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .trip-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .trip-features i {
+            color: #00b4d8;
+        }
+        
+        .trip-schedule {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .trip-price {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #023e8a;
+        }
+        
+        .trip-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #00b4d8;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .trip-button:hover {
+            background: #0077b6;
+        }
+        
+        /* ===== CTA SECTION ===== */
+        .cta {
+            background: linear-gradient(135deg, #023e8a, #0077b6);
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+            margin-top: 50px;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #00b4d8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #0077b6;
+            transform: translateY(-3px);
+        }
+        
+        /* ===== FOOTER ===== */
+        footer {
+            background: #023e8a;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            font-size: 32px;
+            color: #00b4d8;
+        }
+        
+        .footer-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .footer-logo-main {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .footer-logo-sub {
+            font-size: 12px;
+            color: #90e0ef;
+        }
+        
+        .footer-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-link:hover {
+            background: #00b4d8;
+            transform: translateY(-3px);
+        }
+        
+        .footer-col h3 {
+            color: #00b4d8;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #00b4d8;
+            padding-left: 5px;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .contact-info i {
+            color: #00b4d8;
+            margin-top: 3px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            nav ul {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .map-container {
+                flex-direction: column;
+            }
+            
+            .map-visual {
+                min-height: 400px;
+                width: 100%;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dives-hero h1 {
+                font-size: 2.3rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .trips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .map-section {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dives-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+            
+            .site-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-water logo-icon"></i>
+                <div class="logo-text">
+                    <div class="logo-main">THALASSA</div>
+                    <div class="logo-sub">DIVE CENTER</div>
+                </div>
+            </a>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="dives.html" class="active">Dive Trips</a></li>
+                    <li><a href="snorkeling.html">Snorkeling</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="btn-book">Book Now</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dives Hero -->
+    <section class="dives-hero">
+        <div class="container">
+            <h1>Explore Dar es Salaam's Best Dive Sites</h1>
+            <p>Discover vibrant coral reefs, mysterious wrecks, and abundant marine life with our guided dive trips</p>
+            <a href="#interactive-map" class="btn" style="background: #00b4d8; color: white; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: 600;">
+                <i class="fas fa-map-marked-alt"></i> Explore Interactive Map
+            </a>
+        </div>
+    </section>
+
+    <!-- Interactive Map Section -->
+    <section class="map-section" id="interactive-map">
+        <div class="container">
+            <div class="section-title">
+                <h2>Interactive Dive Site Map</h2>
+                <p>Click on dive sites to explore details, difficulty, and marine life</p>
+            </div>
+            
+            <div class="map-container">
+                <div class="map-visual">
+                    <div class="map-dots">
+                        <!-- Dive site dots will be positioned by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="map-details">
+                    <div class="site-info active" id="site-default">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Explore Dive Sites</h3>
+                                <p style="color: #666;">Click on any dive site marker to see details</p>
+                            </div>
+                        </div>
+                        <p style="color: #666; margin-bottom: 20px;">Our interactive map shows all the amazing dive sites around Dar es Salaam. Each site offers unique experiences, from shallow coral gardens to deep wrecks.</p>
+                        <div style="background: #f0f8ff; padding: 20px; border-radius: 10px;">
+                            <h4 style="color: #023e8a; margin-bottom: 10px;">Legend</h4>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                <div style="width: 15px; height: 15px; background: #00b4d8; border-radius: 50%; border: 2px solid white;"></div>
+                                <span style="color: #666;">Dive Site</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                <div style="width: 15px; height: 15px; background: #ff6b35; border-radius: 50%; border: 2px solid white;"></div>
+                                <span style="color: #666;">Selected Site</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mbudya Island -->
+                    <div class="site-info" id="site-mbudya">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-island"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Mbudya Island</h3>
+                                <p style="color: #666;">Shallow coral gardens perfect for beginners</p>
+                            </div>
+                        </div>
+                        
+                        <div class="site-difficulty difficulty-beginner">Beginner Friendly</div>
+                        
+                        <p style="color: #666; margin-bottom: 20px;">Beautiful coral gardens starting at just 3 meters deep, extending to 15 meters. Perfect for beginner divers and snorkelers with calm conditions year-round.</p>
+                        
+                        <div class="site-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">3-15m</div>
+                                <div class="stat-label">Depth</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">20-30m</div>
+                                <div class="stat-label">Visibility</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">26-29°C</div>
+                                <div class="stat-label">Water Temp</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">Marine Life</h4>
+                        <div class="marine-life">
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Butterflyfish
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-star"></i> Starfish
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-feather-alt"></i> Moray Eels
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-crab"></i> Cleaner Shrimp
+                            </div>
+                        </div>
+                        
+                        <a href="contact.html?site=mbudya" class="trip-button" style="margin-top: 20px;">Book Dive at Mbudya</a>
+                    </div>
+                    
+                    <!-- Bongoyo Island -->
+                    <div class="site-info" id="site-bongoyo">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-water"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Bongoyo Island</h3>
+                                <p style="color: #666">Vibrant wall dive with pelagic sightings</p>
+                            </div>
+                        </div>
+                        
+                        <div class="site-difficulty difficulty-intermediate">Intermediate</div>
+                        
+                        <p style="color: #666; margin-bottom: 20px;">Dramatic wall dropping from 12 to 40 meters, frequent sightings of reef sharks, turtles, and occasional eagle rays. Strong currents possible.</p>
+                        
+                        <div class="site-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">12-40m</div>
+                                <div class="stat-label">Depth</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">15-25m</div>
+                                <div class="stat-label">Visibility</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">25-28°C</div>
+                                <div class="stat-label">Water Temp</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">Marine Life</h4>
+                        <div class="marine-life">
+                            <div class="marine-item">
+                                <i class="fas fa-shark"></i> Reef Sharks
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-turtle"></i> Sea Turtles
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Barracuda
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-feather"></i> Eagle Rays
+                            </div>
+                        </div>
+                        
+                        <a href="contact.html?site=bongoyo" class="trip-button" style="margin-top: 20px;">Book Dive at Bongoyo</a>
+                    </div>
+                    
+                    <!-- Mafia Wreck -->
+                    <div class="site-info" id="site-wreck">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-anchor"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Mafia Wreck</h3>
+                                <p style="color: #666">WWII shipwreck with rich marine life</p>
+                            </div>
+                        </div>
+                        
+                        <div class="site-difficulty difficulty-advanced">Advanced</div>
+                        
+                        <p style="color: #666; margin-bottom: 20px;">Sunken cargo ship from WWII lying at 28 meters. The wreck is fully intact and covered in soft corals, home to large groupers and schooling fish.</p>
+                        
+                        <div class="site-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">18-28m</div>
+                                <div class="stat-label">Depth</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">10-20m</div>
+                                <div class="stat-label">Visibility</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">24-27°C</div>
+                                <div class="stat-label">Water Temp</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">Marine Life</h4>
+                        <div class="marine-life">
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Giant Groupers
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Lionfish
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-octopus"></i> Octopus
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Snappers
+                            </div>
+                        </div>
+                        
+                        <a href="contact.html?site=wreck" class="trip-button" style="margin-top: 20px;">Book Wreck Dive</a>
+                    </div>
+                    
+                    <!-- Coral Canyon -->
+                    <div class="site-info" id="site-canyon">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-mountain"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Coral Canyon</h3>
+                                <p style="color: #666">Swim-throughs and overhangs</p>
+                            </div>
+                        </div>
+                        
+                        <div class="site-difficulty difficulty-intermediate">Intermediate</div>
+                        
+                        <p style="color: #666; margin-bottom: 20px;">Spectacular underwater canyon with swim-throughs, overhangs, and tunnels. Covered in colorful soft corals and sponges. Perfect for underwater photography.</p>
+                        
+                        <div class="site-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">8-22m</div>
+                                <div class="stat-label">Depth</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">20-30m</div>
+                                <div class="stat-label">Visibility</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">26-29°C</div>
+                                <div class="stat-label">Water Temp</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">Marine Life</h4>
+                        <div class="marine-life">
+                            <div class="marine-item">
+                                <i class="fas fa-palette"></i> Colorful Nudibranchs
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Anthias Clouds
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-camera"></i> Photo Opportunities
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-star"></i> Basket Stars
+                            </div>
+                        </div>
+                        
+                        <a href="contact.html?site=canyon" class="trip-button" style="margin-top: 20px;">Book Canyon Dive</a>
+                    </div>
+                    
+                    <!-- Night Dive Site -->
+                    <div class="site-info" id="site-night">
+                        <div class="site-header">
+                            <div class="site-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #023e8a; margin-bottom: 5px;">Moonlight Bay</h3>
+                                <p style="color: #666">Nocturnal marine life experience</p>
+                            </div>
+                        </div>
+                        
+                        <div class="site-difficulty difficulty-intermediate">Intermediate</div>
+                        
+                        <p style="color: #666; margin-bottom: 20px;">Experience the reef at night! See octopus hunting, sleeping parrotfish, bioluminescent plankton, and other nocturnal creatures that only come out after dark.</p>
+                        
+                        <div class="site-stats">
+                            <div class="stat-box">
+                                <div class="stat-value">5-15m</div>
+                                <div class="stat-label">Depth</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">15-25m</div>
+                                <div class="stat-label">Visibility</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">25-28°C</div>
+                                <div class="stat-label">Water Temp</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #023e8a; margin-bottom: 10px;">Marine Life</h4>
+                        <div class="marine-life">
+                            <div class="marine-item">
+                                <i class="fas fa-octopus"></i> Hunting Octopus
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-fish"></i> Sleeping Parrotfish
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-star"></i> Bioluminescence
+                            </div>
+                            <div class="marine-item">
+                                <i class="fas fa-crab"></i> Hermit Crabs
+                            </div>
+                        </div>
+                        
+                        <a href="contact.html?site=night" class="trip-button" style="margin-top: 20px;">Book Night Dive</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dive Trips Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Guided Dive Trips</h2>
+                <p>Join our daily guided dives to explore the best sites around Dar es Salaam</p>
+            </div>
+            
+            <div class="trips-grid">
+                <!-- Morning Reef Discovery -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type">MORNING TRIP</div>
+                        <h3>Morning Reef Discovery</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Mbudya & Bongoyo Islands</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Perfect morning trip featuring two dives at the best shallow reef sites. Great visibility and calm morning conditions.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>07:30 AM</span>
+                                <span>Meet at dive center</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>08:30 AM</span>
+                                <span>First dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>10:30 AM</span>
+                                <span>Surface interval</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>11:30 AM</span>
+                                <span>Second dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>01:30 PM</span>
+                                <span>Return to center</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> 2 Guided reef dives</li>
+                            <li><i class="fas fa-check"></i> All equipment included</li>
+                            <li><i class="fas fa-check"></i> Snacks & drinks on boat</li>
+                            <li><i class="fas fa-check"></i> Dive master guide</li>
+                            <li><i class="fas fa-check"></i> Marine life briefing</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$149</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per person • Minimum Open Water certified</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=morning" class="trip-button">Book Morning Trip</a>
+                    </div>
+                </div>
+                
+                <!-- Afternoon Adventure -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type" style="background: #00b4d8;">POPULAR</div>
+                        <h3>Afternoon Adventure</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Coral Canyon & Wreck</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Explore deeper sites including the famous wreck and spectacular coral formations. For experienced divers.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>12:30 PM</span>
+                                <span>Meet at dive center</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>01:30 PM</span>
+                                <span>First dive (wreck)</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>03:30 PM</span>
+                                <span>Surface interval</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>04:30 PM</span>
+                                <span>Second dive (canyon)</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>06:30 PM</span>
+                                <span>Return to center</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> 2 Adventure dives</li>
+                            <li><i class="fas fa-check"></i> Wreck & canyon dive</li>
+                            <li><i class="fas fa-check"></i> Advanced equipment</li>
+                            <li><i class="fas fa-check"></i> Dive computer included</li>
+                            <li><i class="fas fa-check"></i> Experienced guide</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$179</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per person • Advanced certified recommended</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=afternoon" class="trip-button">Book Adventure Trip</a>
+                    </div>
+                </div>
+                
+                <!-- Full Day Explorer -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type">FULL DAY</div>
+                        <h3>Full Day Explorer</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Multiple Sites</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Ultimate diving experience with 3 dives at different sites. Lunch on a secluded beach included.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>07:00 AM</span>
+                                <span>Meet at dive center</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>08:00 AM</span>
+                                <span>First dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>10:30 AM</span>
+                                <span>Second dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>12:30 PM</span>
+                                <span>Beach lunch break</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>02:30 PM</span>
+                                <span>Third dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>05:00 PM</span>
+                                <span>Return to center</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> 3 Guided dives</li>
+                            <li><i class="fas fa-check"></i> Different sites each dive</li>
+                            <li><i class="fas fa-check"></i> Beach lunch included</li>
+                            <li><i class="fas fa-check"></i> All-day refreshments</li>
+                            <li><i class="fas fa-check"></i> Photo service available</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$249</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per person • Open Water certified minimum</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=fullday" class="trip-button">Book Full Day Trip</a>
+                    </div>
+                </div>
+                
+                <!-- Night Dive Special -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type">NIGHT DIVE</div>
+                        <h3>Night Dive Adventure</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Moonlight Bay</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Experience the reef after dark. See nocturnal marine life and bioluminescent plankton with our expert guides.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>06:00 PM</span>
+                                <span>Meet at dive center</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>06:30 PM</span>
+                                <span>Briefing & equipment</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>07:15 PM</span>
+                                <span>Night dive</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>08:45 PM</span>
+                                <span>Return to boat</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>09:30 PM</span>
+                                <span>Return to center</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> 1 Night dive (60 min)</li>
+                            <li><i class="fas fa-check"></i> Torches provided</li>
+                            <li><i class="fas fa-check"></i> Special night briefing</li>
+                            <li><i class="fas fa-check"></i> Hot drinks after dive</li>
+                            <li><i class="fas fa-check"></i> Glow sticks provided</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$129</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per person • Night dive specialty or experience</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=night" class="trip-button">Book Night Dive</a>
+                    </div>
+                </div>
+                
+                <!-- Private Charter -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type">PRIVATE</div>
+                        <h3>Private Boat Charter</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Custom Locations</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Private boat for your group with custom itinerary. Perfect for families, friends, or special occasions.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>Flexible</span>
+                                <span>Custom start time</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>Flexible</span>
+                                <span>2-4 dives as desired</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>Flexible</span>
+                                <span>Lunch & snacks</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>Flexible</span>
+                                <span>Custom sites</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>Flexible</span>
+                                <span>Return time</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> Private boat (max 12 divers)</li>
+                            <li><i class="fas fa-check"></i> Dedicated dive master</li>
+                            <li><i class="fas fa-check"></i> Custom dive sites</li>
+                            <li><i class="fas fa-check"></i> Gourmet catering</li>
+                            <li><i class="fas fa-check"></i> Photography service</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$899</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per boat (up to 12 divers)</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=private" class="trip-button">Book Private Charter</a>
+                    </div>
+                </div>
+                
+                <!-- Snorkel & Dive Combo -->
+                <div class="trip-card">
+                    <div class="trip-header">
+                        <div class="trip-type">COMBO</div>
+                        <h3>Snorkel & Dive Combo</h3>
+                        <div class="trip-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Family-Friendly Sites</span>
+                        </div>
+                    </div>
+                    <div class="trip-content">
+                        <p style="color: #666; margin-bottom: 20px;">Perfect for mixed groups with divers and snorkelers. Everyone can enjoy the underwater world together.</p>
+                        
+                        <div class="trip-schedule">
+                            <div class="schedule-item">
+                                <span>08:30 AM</span>
+                                <span>Meet at dive center</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>09:30 AM</span>
+                                <span>Dive/Snorkel site 1</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>11:30 AM</span>
+                                <span>Lunch on beach</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>01:30 PM</span>
+                                <span>Dive/Snorkel site 2</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span>04:00 PM</span>
+                                <span>Return to center</span>
+                            </div>
+                        </div>
+                        
+                        <ul class="trip-features">
+                            <li><i class="fas fa-check"></i> 2 Activities (dive & snorkel)</li>
+                            <li><i class="fas fa-check"></i> Separate guides for each group</li>
+                            <li><i class="fas fa-check"></i> Beach picnic lunch</li>
+                            <li><i class="fas fa-check"></i> All equipment included</li>
+                            <li><i class="fas fa-check"></i> Family friendly</li>
+                        </ul>
+                        
+                        <div class="trip-price">
+                            <div class="price">$199</div>
+                            <p style="color: #666; font-size: 0.9rem;">Per diver • $99 per snorkeler</p>
+                        </div>
+                        
+                        <a href="contact.html?trip=combo" class="trip-button">Book Combo Trip</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Explore Underwater Tanzania?</h2>
+            <p>Book your dive trip today and experience the amazing marine life of Dar es Salaam</p>
+            
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn btn-primary">Book a Dive Trip</a>
+                <a href="tel:+255769474643" class="btn btn-secondary">
+                    <i class="fas fa-phone-alt"></i> Call for Availability
+                </a>
+                <a href="https://wa.me/255769474643" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Questions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-water"></i>
+                        <div class="footer-logo-text">
+                            <div class="footer-logo-main">THALASSA</div>
+                            <div class="footer-logo-sub">DIVE CENTER</div>
+                        </div>
+                    </div>
+                    <p class="footer-description">PADI-certified dive center offering exceptional underwater experiences in Dar es Salaam, Tanzania.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://instagram.com/thalassatz" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-tripadvisor"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="dives.html">Dive Trips</a></li>
+                        <li><a href="snorkeling.html">Snorkeling</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Shop 17C, Maga beach / Slipway area, Masaki, Dar es Salaam</p>
+                        <p><i class="fas fa-phone-alt"></i> +255 769 474 643</p>
+                        <p><i class="fas fa-envelope"></i> info@thalassatz.com</p>
+                        <p><i class="fas fa-clock"></i> Daily: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>PADI Certified</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <i class="fas fa-award" style="font-size: 32px; color: #ff6b35;"></i>
+                        <div>
+                            <p style="opacity: 0.8; font-size: 14px;">PADI Dive Center #S-36457<br>Internationally recognized</p>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn-book" style="display: inline-block; margin-top: 10px;">Book Now</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Thalassa Dive Center. All rights reserved. | PADI is a registered trademark of PADI Worldwide.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenu').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navMenu');
+            const menuButton = document.getElementById('mobileMenu');
+            
+            if (!nav.contains(event.target) && !menuButton.contains(event.target)) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Interactive Map Functionality
+        const diveSites = [
+            { id: 'mbudya', name: 'Mbudya Island', x: 30, y: 40 },
+            { id: 'bongoyo', name: 'Bongoyo Island', x: 70, y: 20 },
+            { id: 'wreck', name: 'Mafia Wreck', x: 50, y: 70 },
+            { id: 'canyon', name: 'Coral Canyon', x: 80, y: 60 },
+            { id: 'night', name: 'Moonlight Bay', x: 20, y: 80 }
+        ];
+
+        // Create map dots
+        const mapDots = document.querySelector('.map-dots');
+        diveSites.forEach(site => {
+            const dot = document.createElement('div');
+            dot.className = 'map-dot';
+            dot.setAttribute('data-site', site.id);
+            dot.style.left = `${site.x}%`;
+            dot.style.top = `${site.y}%`;
+            dot.title = site.name;
+            
+            dot.addEventListener('click', function() {
+                // Remove active class from all dots
+                document.querySelectorAll('.map-dot').forEach(d => d.classList.remove('active'));
+                // Remove active class from all site info
+                document.querySelectorAll('.site-info').forEach(info => info.classList.remove('active'));
+                
+                // Add active class to clicked dot
+                this.classList.add('active');
+                
+                // Show corresponding site info
+                const siteInfo = document.getElementById(`site-${site.id}`);
+                if (siteInfo) {
+                    siteInfo.classList.add('active');
+                }
+            });
+            
+            mapDots.appendChild(dot);
+        });
+
+        // Trip selection from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tripParam = urlParams.get('trip');
+            const siteParam = urlParams.get('site');
+            
+            if (tripParam) {
+                // Scroll to the specific trip
+                setTimeout(() => {
+                    const tripElement = document.querySelector(`[href*="${tripParam}"]`);
+                    if (tripElement) {
+                        tripElement.closest('.trip-card').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 500);
+            }
+            
+            if (siteParam) {
+                // Show the specific site on map
+                setTimeout(() => {
+                    const siteDot = document.querySelector(`.map-dot[data-site="${siteParam}"]`);
+                    if (siteDot) {
+                        siteDot.click();
+                        document.getElementById('interactive-map').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 1000);
+            }
+        });
+
+        // Add some random fish animation to map
+        function addFishAnimation() {
+            const mapVisual = document.querySelector('.map-visual');
+            for (let i = 0; i < 5; i++) {
+                const fish = document.createElement('div');
+                fish.innerHTML = '🐠';
+                fish.style.position = 'absolute';
+                fish.style.fontSize = '24px';
+                fish.style.left = `${Math.random() * 90}%`;
+                fish.style.top = `${Math.random() * 90}%`;
+                fish.style.animation = `swim ${10 + Math.random() * 20}s linear infinite`;
+                fish.style.zIndex = '1';
+                mapVisual.appendChild(fish);
+            }
+            
+            // Add CSS animation for fish
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes swim {
+                    0% { transform: translateX(0) scaleX(1); }
+                    25% { transform: translateX(25px) translateY(-10px); }
+                    50% { transform: translateX(50px) scaleX(-1); }
+                    75% { transform: translateX(25px) translateY(10px); }
+                    100% { transform: translateX(0) scaleX(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Initialize fish animation
+        addFishAnimation();
+    </script>
+</body>
+</html>
